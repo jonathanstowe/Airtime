@@ -5,6 +5,8 @@ define("REPEAT_WEEKLY", 0);
 define("REPEAT_BI_WEEKLY", 1);
 define("REPEAT_MONTHLY_MONTHLY", 2);
 define("REPEAT_MONTHLY_WEEKLY", 3);
+define("REPEAT_TRI_WEEKLY", 4);
+define("REPEAT_QUAD_WEEKLY", 5);
 
 class Application_Service_ShowService
 {
@@ -14,6 +16,10 @@ class Application_Service_ShowService
     private $repeatType;
     private $isUpdate;
     private $linkedShowContent;
+    private $oldShowTimezone;
+    private $localShowStartHour;
+    private $localShowStartMin;
+    private $origCcShowDay;
 
     public function __construct($showId=null, $showData=null, $isUpdate=false)
     {
@@ -29,6 +35,7 @@ class Application_Service_ShowService
         } else {
             $this->repeatType = -1;
         }
+
         $this->isRecorded = (isset($showData['add_show_record']) && $showData['add_show_record']) ? 1 : 0;
         $this->isRebroadcast = (isset($showData['add_show_rebroadcast']) && $showData['add_show_rebroadcast']) ? 1 : 0;
         $this->isUpdate = $isUpdate;
@@ -54,10 +61,10 @@ class Application_Service_ShowService
             $oldCcShow = CcShowQuery::create()
                 ->findPk($showData["add_show_id"]);
 
-            //DateTime in user's local time
+            //DateTime in shows's local time
             $newStartDateTime = new DateTime($showData["add_show_start_date"]." ".
             $showData["add_show_start_time"],
-                new DateTimeZone(Application_Model_Preference::GetTimezone()));
+                new DateTimeZone($showData["add_show_timezone"]));
 
             $ccShowInstanceOrig = CcShowInstancesQuery::create()
                 ->findPk($showData["add_show_instance_id"]);
@@ -102,7 +109,9 @@ class Application_Service_ShowService
             list($start, $end) = $service_showForm->getNextFutureRepeatShowTime();
             $oldCcShowDay = $oldCcShow->getFirstCcShowDay();
             $oldCcShowDay
-                ->setDbFirstShow($start->setTimezone(new DateTimeZone("UTC"))->format("Y-m-d"))
+                ->setDbFirstShow(
+                    $start->setTimezone(new DateTimeZone(
+                        $oldCcShowDay->getDbTimezone()))->format("Y-m-d"))
                 ->save();
 
             $con->commit();
@@ -112,6 +121,23 @@ class Application_Service_ShowService
             Logging::info("EXCEPTION: Show update failed.");
             Logging::info($e->getMessage());
         }
+    }
+
+    /**
+     * 
+     * If a user is editing a show we need to store the original timezone and
+     * start time in case the show's timezone is changed and we are crossing
+     * over DST
+     */
+    private function storeOrigLocalShowInfo()
+    {
+        $this->origCcShowDay = $this->ccShow->getFirstCcShowDay();
+
+        $this->oldShowTimezone = $this->origCcShowDay->getDbTimezone();
+
+        $origStartTime = explode(":", $this->origCcShowDay->getDbStartTime());
+        $this->localShowStartHour = $origStartTime[0];
+        $this->localShowStartMin = $origStartTime[1];
     }
 
     public function addUpdateShow($showData)
@@ -134,10 +160,11 @@ class Application_Service_ShowService
             $daysAdded = array();
             if ($this->isUpdate) {
                 $daysAdded = $this->delegateInstanceCleanup($showData);
-                // updates cc_show_instances start/end times, and updates
-                // schedule start/end times
-                $this->applyShowStartEndDifference($showData);
+
+                $this->storeOrigLocalShowInfo();
+
                 $this->deleteRebroadcastInstances();
+
                 $this->deleteCcShowDays();
                 $this->deleteCcShowHosts();
                 if ($this->isRebroadcast) {
@@ -158,6 +185,10 @@ class Application_Service_ShowService
             //create new ccShowInstances
             $this->delegateInstanceCreation($daysAdded);
 
+            if ($this->isUpdate) {
+                $this->adjustSchedule($showData);
+            }
+
             $con->commit();
             Application_Model_RabbitMq::PushSchedule();
         } catch (Exception $e) {
@@ -165,6 +196,20 @@ class Application_Service_ShowService
             $this->isUpdate ? $action = "update" : $action = "creation";
             Logging::info("EXCEPTION: Show ".$action." failed.");
             Logging::info($e->getMessage());
+        }
+    }
+
+    private function adjustSchedule($showData)
+    {
+        $con = Propel::getConnection(CcSchedulePeer::DATABASE_NAME);
+        $ccShowInstances = CcShowInstancesQuery::create()
+            ->filterByDbShowId($this->ccShow->getDbId())
+            ->find();
+
+        $this->updateScheduleStartEndTimes($showData);
+
+        foreach ($ccShowInstances as $instance) {
+            $instance->updateScheduleStatus($con);
         }
     }
 
@@ -214,6 +259,14 @@ class Application_Service_ShowService
                 case REPEAT_BI_WEEKLY:
                     $this->createWeeklyRepeatInstances($day, $populateUntil, REPEAT_BI_WEEKLY,
                         new DateInterval("P14D"), $daysAdded);
+                    break;
+                case REPEAT_TRI_WEEKLY:
+                    $this->createWeeklyRepeatInstances($day, $populateUntil, REPEAT_TRI_WEEKLY,
+                        new DateInterval("P21D"), $daysAdded);
+                    break;
+                case REPEAT_QUAD_WEEKLY:
+                    $this->createWeeklyRepeatInstances($day, $populateUntil, REPEAT_QUAD_WEEKLY,
+                        new DateInterval("P28D"), $daysAdded);
                     break;
                 case REPEAT_MONTHLY_MONTHLY:
                     $this->createMonthlyRepeatInstances($day, $populateUntil);
@@ -346,7 +399,7 @@ SQL;
 
             //if the start date changes, these are the repeat types
             //that require show instance deletion
-            $deleteRepeatTypes = array(REPEAT_BI_WEEKLY, REPEAT_MONTHLY_MONTHLY,
+            $deleteRepeatTypes = array(REPEAT_BI_WEEKLY, REPEAT_TRI_WEEKLY, REPEAT_QUAD_WEEKLY, REPEAT_MONTHLY_MONTHLY,
                 REPEAT_MONTHLY_WEEKLY);
 
             if (in_array($this->repeatType, $deleteRepeatTypes) &&
@@ -734,21 +787,18 @@ SQL;
         return $endDate;
     }
 
-    private function applyShowStartEndDifference($showData)
+    private function updateScheduleStartEndTimes($showData)
     {
         $showId = $this->ccShow->getDbId();
-        //CcShowDay object
-        $currentShowDay = $this->ccShow->getFirstCcShowDay();
 
-        //DateTime in user's local time
+        //DateTime in show's local time
         $newStartDateTime = new DateTime($showData["add_show_start_date"]." ".
         $showData["add_show_start_time"],
-            new DateTimeZone(Application_Model_Preference::GetTimezone()));
+            new DateTimeZone($showData["add_show_timezone"]));
 
         $diff = $this->calculateShowStartDiff($newStartDateTime,
-            $currentShowDay->getLocalStartDateAndTime());
+            $this->origCcShowDay->getLocalStartDateAndTime());
 
-        $this->updateInstanceStartEndTime($diff);
         $ccShowInstances = $this->ccShow->getFutureCcShowInstancess();
         $instanceIds = array();
         foreach ($ccShowInstances as $ccShowInstance) {
@@ -855,11 +905,6 @@ SQL;
             $ccShowInstance->setDbRecord($showDay->getDbRecord());
             $ccShowInstance->save();
 
-            if ($this->isUpdate) {
-                $con = Propel::getConnection(CcSchedulePeer::DATABASE_NAME);
-                $ccShowInstance->updateScheduleStatus($con);
-            }
-
             if ($this->isRebroadcast) {
                 $this->createRebroadcastInstances($showDay, $start, $ccShowInstance->getDbId());
             }
@@ -908,13 +953,9 @@ SQL;
             /*
              * Make sure start date is less than populate until date AND
              * last show date is null OR start date is less than last show date
-             *
-             * (NOTE: We cannot call getTimestamp() to compare the dates because of
-             * a PHP 5.3.3 bug with DatePeriod objects - See CC-5159 for more details)
              */
-            if ($utcStartDateTime->format("Y-m-d H:i:s") <= $populateUntil->format("Y-m-d H:i:s") &&
-               ( is_null($utcLastShowDateTime) ||
-                 $utcStartDateTime->format("Y-m-d H:i:s") < $utcLastShowDateTime->format("Y-m-d H:i:s")) ) {
+            if ($utcStartDateTime <= $populateUntil &&
+               ( is_null($utcLastShowDateTime) || $utcStartDateTime < $utcLastShowDateTime) ) {
 
                  $lastCreatedShow = clone $utcStartDateTime;
                 /* There may not always be an instance when editing a show
@@ -946,11 +987,6 @@ SQL;
                     $ccShowInstance->setDbEnds($utcEndDateTime);
                     $ccShowInstance->setDbRecord($record);
                     $ccShowInstance->save();
-
-                    if ($updateScheduleStatus) {
-                        $con = Propel::getConnection(CcSchedulePeer::DATABASE_NAME);
-                        $ccShowInstance->updateScheduleStatus($con);
-                    }
                 }
 
                 if ($this->isRebroadcast) {
@@ -1039,11 +1075,6 @@ SQL;
                     $ccShowInstance->setDbEnds($utcEndDateTime);
                     $ccShowInstance->setDbRecord($record);
                     $ccShowInstance->save();
-
-                    if ($updateScheduleStatus) {
-                        $con = Propel::getConnection(CcSchedulePeer::DATABASE_NAME);
-                        $ccShowInstance->updateScheduleStatus($con);
-                    }
                 }
 
                 if ($this->isRebroadcast) {
@@ -1152,6 +1183,7 @@ SQL;
         do {
             $nextDT = date_create($weekNumberOfMonth." ".$dayOfWeek.
                 " of ".$tempDT->format("F")." ".$tempDT->format("Y"));
+            $nextDT->setTimezone(new DateTimeZone($timezone));
 
             /* We have to check if the next date is in the same month in case
              * the repeat day is in the fifth week of the month.
@@ -1218,8 +1250,13 @@ SQL;
      */
     private function getInstance($starts)
     {
+        $temp = clone($starts);
+        $temp->setTimezone(new DateTimeZone($this->oldShowTimezone));
+        $temp->setTime($this->localShowStartHour, $this->localShowStartMin);
+        $temp->setTimezone(new DateTimeZone("UTC"));
+
         $ccShowInstance = CcShowInstancesQuery::create()
-            ->filterByDbStarts($starts->format("Y-m-d H:i:s"), Criteria::EQUAL)
+            ->filterByDbStarts($temp->format("Y-m-d H:i:s"), Criteria::EQUAL)
             ->filterByDbShowId($this->ccShow->getDbId(), Criteria::EQUAL)
             ->filterByDbModifiedInstance(false, Criteria::EQUAL)
             ->filterByDbRebroadcast(0, Criteria::EQUAL)
@@ -1330,7 +1367,7 @@ SQL;
             $showDay->setDbFirstShow($startDateTime->format("Y-m-d"));
             $showDay->setDbLastShow($endDate);
             $showDay->setDbStartTime($startDateTime->format("H:i:s"));
-            $showDay->setDbTimezone(Application_Model_Preference::GetTimezone());
+            $showDay->setDbTimezone($showData['add_show_timezone']);
             $showDay->setDbDuration($showData['add_show_duration']);
             $showDay->setDbRepeatType($this->repeatType);
             $showDay->setDbShowId($showId);
@@ -1356,7 +1393,7 @@ SQL;
                     $showDay->setDbFirstShow($startDateTimeClone->format("Y-m-d"));
                     $showDay->setDbLastShow($endDate);
                     $showDay->setDbStartTime($startDateTimeClone->format("H:i"));
-                    $showDay->setDbTimezone(Application_Model_Preference::GetTimezone());
+                    $showDay->setDbTimezone($showData['add_show_timezone']);
                     $showDay->setDbDuration($showData['add_show_duration']);
                     $showDay->setDbDay($day);
                     $showDay->setDbRepeatType($this->repeatType);
@@ -1481,12 +1518,13 @@ SQL;
     private function createUTCStartEndDateTime($showStart, $duration, $offset=null)
     {
         $startDateTime = clone $showStart;
+        $timezone = $startDateTime->getTimezone();
 
         if (isset($offset)) {
             //$offset["hours"] and $offset["mins"] represents the start time
             //of a rebroadcast show
             $startDateTime = new DateTime($startDateTime->format("Y-m-d")." ".
-                $offset["hours"].":".$offset["mins"]);
+                $offset["hours"].":".$offset["mins"], $timezone);
             $startDateTime->add(new DateInterval("P{$offset["days"]}D"));
         }
         //convert time to UTC
