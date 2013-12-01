@@ -53,9 +53,9 @@ try:
         sys.exit(1)
 
     #copy monit files
-    shutil.copy('%s/../../monit/monit-airtime-generic.cfg'%current_script_dir, '/usr/local/etc/monit/conf.d/')
-    subprocess.call('sed -i "s/\$admin_pass/%s/g" /usr/local/etc/monit/conf.d/monit-airtime-generic.cfg' % get_rand_string(), shell=True)
-    shutil.copy('%s/../monit-airtime-media-monitor.cfg'%current_script_dir, '/usr/local/etc/monit/conf.d/')
+    shutil.copy('%s/../../monit/monit-airtime-generic.cfg'%current_script_dir, '/usr/local/etc/monit.d/')
+    subprocess.call('sed -i "s/\$admin_pass/%s/g" /usr/local/etc/monit.d/monit-airtime-generic.cfg' % get_rand_string(), shell=True)
+    shutil.copy('%s/../monit-airtime-media-monitor.cfg'%current_script_dir, '/usr/local/etc/monit.d/')
 
     #create log dir
     create_dir(config['log_dir'])

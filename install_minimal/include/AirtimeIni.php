@@ -21,16 +21,16 @@ if (!function_exists('pg_connect')) {
 }
 
 
-/* This class deals with the config files stored in /etc/airtime */
+/* This class deals with the config files stored in /usr/local/etc/airtime */
 class AirtimeIni
 {
-    const CONF_FILE_AIRTIME = "/etc/airtime/airtime.conf";
-    const CONF_FILE_PYPO = "/etc/airtime/pypo.cfg";
-    const CONF_FILE_RECORDER = "/etc/airtime/recorder.cfg";
-    const CONF_FILE_API_CLIENT = "/etc/airtime/api_client.cfg";
-    const CONF_FILE_LIQUIDSOAP = "/etc/airtime/liquidsoap.cfg";
-    const CONF_FILE_MEDIAMONITOR = "/etc/airtime/media-monitor.cfg";
-    const CONF_FILE_MONIT = "/etc/monit/conf.d/airtime-monit.cfg";
+    const CONF_FILE_AIRTIME = "/usr/local/etc/airtime/airtime.conf";
+    const CONF_FILE_PYPO = "/usr/local/etc/airtime/pypo.cfg";
+    const CONF_FILE_RECORDER = "/usr/local/etc/airtime/recorder.cfg";
+    const CONF_FILE_API_CLIENT = "/usr/local/etc/airtime/api_client.cfg";
+    const CONF_FILE_LIQUIDSOAP = "/usr/local/etc/airtime/liquidsoap.cfg";
+    const CONF_FILE_MEDIAMONITOR = "/usr/local/etc/airtime/media-monitor.cfg";
+    const CONF_FILE_MONIT = "/usr/local/etc/monit.d/airtime-monit.cfg";
 
     const CONF_PYPO_GRP = "pypo";
     const CONF_WWW_DATA_GRP = "www";
@@ -53,20 +53,20 @@ class AirtimeIni
     }
 
     /**
-     * This function creates the /etc/airtime configuration folder
+     * This function creates the /usr/local/etc/airtime configuration folder
      * and copies the default config files to it.
      */
     public static function CreateIniFiles()
     {
-        if (!file_exists("/etc/airtime/")){
-            if (!mkdir("/etc/airtime/", 0755, true)){
-                echo "Could not create /etc/airtime/ directory. Exiting.";
+        if (!file_exists("/usr/local/etc/airtime/")){
+            if (!mkdir("/usr/local/etc/airtime/", 0755, true)){
+                echo "Could not create /usr/local/etc/airtime/ directory. Exiting.";
                 exit(1);
             }
         }
 
         if (!copy(AirtimeInstall::GetAirtimeSrcDir()."/build/airtime.conf", self::CONF_FILE_AIRTIME)){
-            echo "Could not copy airtime.conf to /etc/airtime/. Exiting.";
+            echo "Could not copy airtime.conf to /usr/local/etc/airtime/. Exiting.";
             exit(1);
         } else if (!self::ChangeFileOwnerGroupMod(self::CONF_FILE_AIRTIME, self::CONF_WWW_DATA_GRP)){
             echo "Could not set ownership of api_client.cfg to 'pypo'. Exiting.";
@@ -76,7 +76,7 @@ class AirtimeIni
         
         if (getenv("python_service") == "0"){
             if (!copy(__DIR__."/../../python_apps/api_clients/api_client.cfg", self::CONF_FILE_API_CLIENT)){
-                echo "Could not copy api_client.cfg to /etc/airtime/. Exiting.";
+                echo "Could not copy api_client.cfg to /usr/local/etc/airtime/. Exiting.";
                 exit(1);
             } else if (!self::ChangeFileOwnerGroupMod(self::CONF_FILE_API_CLIENT, self::CONF_PYPO_GRP)){
                 echo "Could not set ownership of api_client.cfg to 'pypo'. Exiting.";
@@ -84,7 +84,7 @@ class AirtimeIni
             }
                     
             if (!copy(__DIR__."/../../python_apps/pypo/pypo.cfg", self::CONF_FILE_PYPO)){
-                echo "Could not copy pypo.cfg to /etc/airtime/. Exiting.";
+                echo "Could not copy pypo.cfg to /usr/local/etc/airtime/. Exiting.";
                 exit(1);
             } else if (!self::ChangeFileOwnerGroupMod(self::CONF_FILE_PYPO, self::CONF_PYPO_GRP)){
                 echo "Could not set ownership of pypo.cfg to 'pypo'. Exiting.";
@@ -93,7 +93,7 @@ class AirtimeIni
             
             /*
             if (!copy(__DIR__."/../../python_apps/pypo/liquidsoap_scripts/liquidsoap.cfg", self::CONF_FILE_LIQUIDSOAP)){
-                echo "Could not copy liquidsoap.cfg to /etc/airtime/. Exiting.";
+                echo "Could not copy liquidsoap.cfg to /usr/local/etc/airtime/. Exiting.";
                 exit(1);
             } else if (!self::ChangeFileOwnerGroupMod(self::CONF_FILE_LIQUIDSOAP, self::CONF_PYPO_GRP)){
                 echo "Could not set ownership of liquidsoap.cfg to 'pypo'. Exiting.";
@@ -102,7 +102,7 @@ class AirtimeIni
             * */
                             
             if (!copy(__DIR__."/../../python_apps/media-monitor/media-monitor.cfg", self::CONF_FILE_MEDIAMONITOR)){
-                echo "Could not copy media-monitor.cfg to /etc/airtime/. Exiting.";
+                echo "Could not copy media-monitor.cfg to /usr/local/etc/airtime/. Exiting.";
                 exit(1);
             } else if (!self::ChangeFileOwnerGroupMod(self::CONF_FILE_MEDIAMONITOR, self::CONF_PYPO_GRP)){
                 echo "Could not set ownership of media-monitor.cfg to 'pypo'. Exiting.";
@@ -118,11 +118,11 @@ class AirtimeIni
     }
     
     public static function RemoveMonitFile(){
-        @unlink("/etc/monit/conf.d/airtime-monit.cfg");
+        @unlink("/usr/local/etc/monit.d/airtime-monit.cfg");
     }
 
     /**
-     * This function removes /etc/airtime and the configuration
+     * This function removes /usr/local/etc/airtime and the configuration
      * files present within it.
      */
     public static function RemoveIniFiles()
@@ -149,7 +149,7 @@ class AirtimeIni
         }
 
         if (file_exists("etc/airtime")){
-            rmdir("/etc/airtime/");
+            rmdir("/usr/local/etc/airtime/");
         }
     }
 
@@ -266,7 +266,7 @@ class AirtimeIni
     }
 
     /**
-     * After the configuration files have been copied to /etc/airtime,
+     * After the configuration files have been copied to /usr/local/etc/airtime,
      * this function will update them to values unique to this
      * particular installation.
      */

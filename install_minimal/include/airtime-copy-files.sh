@@ -48,10 +48,10 @@ fi
 
 
 echo "* Creating /usr/local/etc/monit/conf.d/monit-airtime-generic.cfg"
-mkdir -p /usr/local/etc/monit/conf.d/
-if [ ! -e /usr/local/etc/monit/conf.d/monit-airtime-generic.cfg ]; then
-    rm -f /usr/local/etc/monit/conf.d/*airtime*
-    cp $AIRTIMEROOT/python_apps/monit/monit-airtime-generic.cfg /usr/local/etc/monit/conf.d/
+mkdir -p /usr/local/etc/monit.d/
+if [ ! -e /usr/local/etc/monit.d/monit-airtime-generic.cfg ]; then
+    rm -f /usr/local/etc/monit.d/*airtime*
+    cp $AIRTIMEROOT/python_apps/monit/monit-airtime-generic.cfg /usr/local/etc/monit.d/
 fi
 
 

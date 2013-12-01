@@ -9,7 +9,7 @@ if (file_exists('/usr/share/php/libzend-framework-php')){
 class AirtimeInstall
 {
     const CONF_DIR_BINARIES = "/usr/local/lib/airtime";
-    const CONF_DIR_WWW = "/usr//local/share/airtime";
+    const CONF_DIR_WWW = "/usr/local/share/airtime";
     const CONF_DIR_LOG = "/var/log/airtime";
 
     public static $databaseTablesCreated = false;
@@ -375,38 +375,38 @@ class AirtimeInstall
 
     public static function CreateSymlinksToUtils()
     {
-        echo "* Creating /usr/bin symlinks".PHP_EOL;
+        echo "* Creating /usr/local/bin symlinks".PHP_EOL;
         AirtimeInstall::RemoveSymlinks();
 
         echo "* Installing airtime-import".PHP_EOL;
         $dir = AirtimeInstall::CONF_DIR_BINARIES."/utils/airtime-import/airtime-import";
-        exec("ln -s $dir /usr/bin/airtime-import");
+        exec("ln -s $dir /usr/local/bin/airtime-import");
 
         echo "* Installing airtime-update-db-settings".PHP_EOL;
         $dir = AirtimeInstall::CONF_DIR_BINARIES."/utils/airtime-update-db-settings";
-        exec("ln -s $dir /usr/bin/airtime-update-db-settings");
+        exec("ln -s $dir /usr/local/bin/airtime-update-db-settings");
 
         echo "* Installing airtime-check-system".PHP_EOL;
         $dir = AirtimeInstall::CONF_DIR_BINARIES."/utils/airtime-check-system";
-        exec("ln -s $dir /usr/bin/airtime-check-system");
+        exec("ln -s $dir /usr/local/bin/airtime-check-system");
 
         echo "* Installing airtime-user".PHP_EOL;
         $dir = AirtimeInstall::CONF_DIR_BINARIES."/utils/airtime-user";
-        exec("ln -s $dir /usr/bin/airtime-user");
+        exec("ln -s $dir /usr/local/bin/airtime-user");
 
         echo "* Installing airtime-log".PHP_EOL;
         $dir = AirtimeInstall::CONF_DIR_BINARIES."/utils/airtime-log";
-        exec("ln -s $dir /usr/bin/airtime-log");
+        exec("ln -s $dir /usr/local/bin/airtime-log");
     }
 
     public static function RemoveSymlinks()
     {
-        exec("rm -f /usr/bin/airtime-import");
-        exec("rm -f /usr/bin/airtime-update-db-settings");
-        exec("rm -f /usr/bin/airtime-check-system");
-        exec("rm -f /usr/bin/airtime-user");
-        exec("rm -f /usr/bin/airtime-log");
-        exec("rm -f /usr/bin/airtime-clean-storage");
+        exec("rm -f /usr/local/bin/airtime-import");
+        exec("rm -f /usr/local/bin/airtime-update-db-settings");
+        exec("rm -f /usr/local/bin/airtime-check-system");
+        exec("rm -f /usr/local/bin/airtime-user");
+        exec("rm -f /usr/local/bin/airtime-log");
+        exec("rm -f /usr/local/bin/airtime-clean-storage");
     }
 
     public static function InstallPhpCode()
@@ -446,7 +446,7 @@ class AirtimeInstall
                       AirtimeIni::CONF_FILE_LIQUIDSOAP,
                       AirtimeIni::CONF_FILE_PYPO,
                       AirtimeIni::CONF_FILE_RECORDER,
-                      "/usr/lib/airtime/pypo",
+                      "/usr/local/lib/airtime/pypo",
                       "/var/log/airtime",
                       "/var/log/airtime/pypo",
                       "/var/tmp/airtime/pypo");
