@@ -17,13 +17,6 @@ BAD_VERSION="1.4.8"
 VERSION=$(virtualenv --version)
 NEWEST_VERSION=$(echo -e "$BAD_VERSION\n$VERSION\n" | sort -t '.' -g | tail -n 1)
 echo -n "Ensuring python-virtualenv version > $BAD_VERSION..."
-if [[ "$NEWEST_VERSION" = "$BAD_VERSION" ]]; then
-    echo "Failed!"
-    echo "You have version $BAD_VERSION or older installed. Please upgrade python-virtualenv and install Airtime again."
-    exit 1
-else
-    echo "Success!"
-fi
 
 VIRTUAL_ENV_DIR="/usr/local/lib/airtime/airtime_virtualenv"
 VIRTUAL_ENV_SHARE="/usr/local/share/python-virtualenv/"
