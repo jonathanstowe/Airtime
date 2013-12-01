@@ -90,18 +90,18 @@ try:
         sys.exit(1)
 
     #copy monit files
-    shutil.copy('%s/../../monit/monit-airtime-generic.cfg'%current_script_dir, '/usr/local/etc/monit/conf.d/')
-    subprocess.call('sed -i "s/\$admin_pass/%s/g" /usr/local/etc/monit/conf.d/monit-airtime-generic.cfg' % get_rand_string(), shell=True)
+    shutil.copy('%s/../../monit/monit-airtime-generic.cfg'%current_script_dir, '/usr/local/etc/monit.d/')
+    subprocess.call('sed -i "s/\$admin_pass/%s/g" /usr/local/etc/monit.d/monit-airtime-generic.cfg' % get_rand_string(), shell=True)
 
     monit_version = get_monit_version()
     if version_compare(monit_version, "5.3.0") >= 0:
         shutil.copy('%s/../monit-airtime-liquidsoap.cfg' % current_script_dir, \
-                    '/usr/local/etc/monit/conf.d/monit-airtime-liquidsoap.cfg')
+                    '/usr/local/etc/monit.d/monit-airtime-liquidsoap.cfg')
     else:
         shutil.copy('%s/../monit-pre530-airtime-liquidsoap.cfg' % current_script_dir, \
-                    '/usr/local/etc/monit/conf.d/monit-airtime-liquidsoap.cfg')
+                    '/usr/local/etc/monit.d/monit-airtime-liquidsoap.cfg')
 
-    shutil.copy('%s/../monit-airtime-playout.cfg'%current_script_dir, '/usr/local/etc/monit/conf.d/')
+    shutil.copy('%s/../monit-airtime-playout.cfg'%current_script_dir, '/usr/local/etc/monit.d/')
 
     #create pypo log dir
     create_dir(config['pypo_log_dir'])
@@ -132,8 +132,8 @@ try:
     os.system("chown -R pypo:pypo "+config["base_recorded_files"])
 
     #copy init.d script
-    shutil.copy(config["bin_dir"]+"/bin/airtime-playout-init-d", "/usr/local/etc/rc.d/airtime-playout")
-    shutil.copy(config["bin_dir"]+"/bin/airtime-liquidsoap-init-d", "/usr/local/etc/rc.d/airtime-liquidsoap")
+    shutil.copy(config["bin_dir"]+"/bin/airtime-playout-init-d", "/usr/local/etc/rc.d/airtime_playout")
+    shutil.copy(config["bin_dir"]+"/bin/airtime-liquidsoap-init-d", "/usr/local/etc/rc.d/airtime_liquidsoap")
 
     #copy log rotate script
     shutil.copy(config["bin_dir"]+"/bin/liquidsoap_scripts/airtime-liquidsoap.logrotate", "/usr/local/etc/logrotate.d/airtime-liquidsoap")
