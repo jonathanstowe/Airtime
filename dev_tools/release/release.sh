@@ -19,8 +19,8 @@ else
     version=$1
 fi
 
-dir=$(dirname $(readlink -f $0))
-gitrepo=$(readlink -f ./../../)
+dir=$(dirname $(realpath $0))
+gitrepo=$(realpath ./../../)
 
 echo "Creating tarballs with ${suffix} suffix"
 

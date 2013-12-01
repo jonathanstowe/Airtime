@@ -1,6 +1,6 @@
 #!/bin/bash -e
 # Absolute path to this script
-SCRIPT=`readlink -f $0`
+SCRIPT=`realpath $0`
 # Absolute directory this script is in
 SCRIPTPATH=`dirname $SCRIPT`
 

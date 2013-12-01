@@ -34,7 +34,7 @@ virtualenv_bin="/usr/lib/airtime/airtime_virtualenv/bin/"
 export PYTHONPATH=${api_client_path}
 
 # Absolute path to this script
-SCRIPT=`readlink -f $0`
+SCRIPT=`realpath $0`
 # Absolute directory this script is in
 SCRIPTPATH=`dirname $SCRIPT`
 

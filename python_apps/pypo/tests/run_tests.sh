@@ -8,7 +8,7 @@ if [ "$pytest_exist" != "0" ]; then
     exit 1
 fi
 
-SCRIPT=`readlink -f $0`
+SCRIPT=`realpath $0`
 # Absolute directory this script is in
 SCRIPTPATH=`dirname $SCRIPT`
 

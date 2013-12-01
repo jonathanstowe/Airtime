@@ -37,7 +37,7 @@ ls_param="/usr/lib/airtime/pypo/bin/liquidsoap_scripts/ls_script.liq"
 
 export PYTHONPATH=${api_client_path}
 
-SCRIPT=`readlink -f $0`
+SCRIPT=`realpath $0`
 # Absolute directory this script is in
 SCRIPTPATH=`dirname $SCRIPT`
 
