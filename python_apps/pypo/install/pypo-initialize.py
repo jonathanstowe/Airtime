@@ -38,8 +38,8 @@ def get_os_codename():
 
     return ("unknown", "unknown")
 
-PATH_INI_FILE = '/etc/airtime/pypo.cfg'
-PATH_LIQUIDSOAP_BIN = '/usr/lib/airtime/pypo/bin/liquidsoap_bin'
+PATH_INI_FILE = '/usr/local/etc/airtime/pypo.cfg'
+PATH_LIQUIDSOAP_BIN = '/usr/local/usr/lib/airtime/pypo/bin/liquidsoap_bin'
 
 #any debian/ubuntu codename in this et will automatically use the natty liquidsoap binary
 arch_map = dict({"32bit":"i386", "64bit":"amd64"})
@@ -64,7 +64,7 @@ try:
 
     p = Popen("which liquidsoap", shell=True, stdout=PIPE)
     liq_path = p.communicate()[0].strip()
-    symlink_path = "/usr/bin/airtime-liquidsoap"
+    symlink_path = "/usr/local/usr/bin/airtime-liquidsoap"
 
     if p.returncode == 0:
         try:

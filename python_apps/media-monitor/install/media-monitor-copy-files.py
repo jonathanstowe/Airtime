@@ -32,7 +32,7 @@ def create_dir(path):
 def get_rand_string(length=10):
     return ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(length))
 
-PATH_INI_FILE = '/etc/airtime/media-monitor.cfg'
+PATH_INI_FILE = '/usr/local/etc/airtime/media-monitor.cfg'
 
 try:
     # Absolute path this script is in
@@ -53,9 +53,9 @@ try:
         sys.exit(1)
 
     #copy monit files
-    shutil.copy('%s/../../monit/monit-airtime-generic.cfg'%current_script_dir, '/etc/monit/conf.d/')
-    subprocess.call('sed -i "s/\$admin_pass/%s/g" /etc/monit/conf.d/monit-airtime-generic.cfg' % get_rand_string(), shell=True)
-    shutil.copy('%s/../monit-airtime-media-monitor.cfg'%current_script_dir, '/etc/monit/conf.d/')
+    shutil.copy('%s/../../monit/monit-airtime-generic.cfg'%current_script_dir, '/usr/local/etc/monit/conf.d/')
+    subprocess.call('sed -i "s/\$admin_pass/%s/g" /usr/local/etc/monit/conf.d/monit-airtime-generic.cfg' % get_rand_string(), shell=True)
+    shutil.copy('%s/../monit-airtime-media-monitor.cfg'%current_script_dir, '/usr/local/etc/monit/conf.d/')
 
     #create log dir
     create_dir(config['log_dir'])
@@ -68,7 +68,7 @@ try:
     copy_dir(mm2_source, os.path.join( config["bin_dir"], "mm2" ))
 
     #copy init.d script
-    shutil.copy(config["bin_dir"]+"/airtime-media-monitor-init-d", "/etc/init.d/airtime-media-monitor")
+    shutil.copy(config["bin_dir"]+"/airtime-media-monitor-init-d", "/usr/local/etc/rc.d/airtime-media-monitor")
 
 except Exception, e:
     print e

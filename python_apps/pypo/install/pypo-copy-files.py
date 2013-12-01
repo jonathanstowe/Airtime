@@ -61,7 +61,7 @@ def version_compare(version1, version2):
         return [int(x) for x in re.sub(r'(\.0+)*$','', v).split(".")]
     return cmp(normalize(version1), normalize(version2))
 
-PATH_INI_FILE = '/etc/airtime/pypo.cfg'
+PATH_INI_FILE = '/usr/local/etc/airtime/pypo.cfg'
 
 try:
     # Absolute path this script is in
@@ -71,12 +71,12 @@ try:
         shutil.copy('%s/../pypo.cfg'%current_script_dir, PATH_INI_FILE)
 
     try:
-        os.remove("/etc/airtime/liquidsoap.cfg")
+        os.remove("/usr/local/etc/airtime/liquidsoap.cfg")
     except Exception, e:
         pass
     gid = grp.getgrnam("pypo").gr_gid
-    os.chown("/etc/airtime", -1, gid)
-    os.chmod("/etc/airtime", stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR |     stat.S_IRGRP | stat.S_IWGRP | stat.S_IXGRP |     stat.S_IROTH | stat.S_IXOTH)
+    os.chown("/usr/local/etc/airtime", -1, gid)
+    os.chmod("/usr/local/etc/airtime", stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR |     stat.S_IRGRP | stat.S_IWGRP | stat.S_IXGRP |     stat.S_IROTH | stat.S_IXOTH)
 
     # load config file
     try:
@@ -90,18 +90,18 @@ try:
         sys.exit(1)
 
     #copy monit files
-    shutil.copy('%s/../../monit/monit-airtime-generic.cfg'%current_script_dir, '/etc/monit/conf.d/')
-    subprocess.call('sed -i "s/\$admin_pass/%s/g" /etc/monit/conf.d/monit-airtime-generic.cfg' % get_rand_string(), shell=True)
+    shutil.copy('%s/../../monit/monit-airtime-generic.cfg'%current_script_dir, '/usr/local/etc/monit/conf.d/')
+    subprocess.call('sed -i "s/\$admin_pass/%s/g" /usr/local/etc/monit/conf.d/monit-airtime-generic.cfg' % get_rand_string(), shell=True)
 
     monit_version = get_monit_version()
     if version_compare(monit_version, "5.3.0") >= 0:
         shutil.copy('%s/../monit-airtime-liquidsoap.cfg' % current_script_dir, \
-                    '/etc/monit/conf.d/monit-airtime-liquidsoap.cfg')
+                    '/usr/local/etc/monit/conf.d/monit-airtime-liquidsoap.cfg')
     else:
         shutil.copy('%s/../monit-pre530-airtime-liquidsoap.cfg' % current_script_dir, \
-                    '/etc/monit/conf.d/monit-airtime-liquidsoap.cfg')
+                    '/usr/local/etc/monit/conf.d/monit-airtime-liquidsoap.cfg')
 
-    shutil.copy('%s/../monit-airtime-playout.cfg'%current_script_dir, '/etc/monit/conf.d/')
+    shutil.copy('%s/../monit-airtime-playout.cfg'%current_script_dir, '/usr/local/etc/monit/conf.d/')
 
     #create pypo log dir
     create_dir(config['pypo_log_dir'])
@@ -132,11 +132,11 @@ try:
     os.system("chown -R pypo:pypo "+config["base_recorded_files"])
 
     #copy init.d script
-    shutil.copy(config["bin_dir"]+"/bin/airtime-playout-init-d", "/etc/init.d/airtime-playout")
-    shutil.copy(config["bin_dir"]+"/bin/airtime-liquidsoap-init-d", "/etc/init.d/airtime-liquidsoap")
+    shutil.copy(config["bin_dir"]+"/bin/airtime-playout-init-d", "/usr/local/etc/rc.d/airtime-playout")
+    shutil.copy(config["bin_dir"]+"/bin/airtime-liquidsoap-init-d", "/usr/local/etc/rc.d/airtime-liquidsoap")
 
     #copy log rotate script
-    shutil.copy(config["bin_dir"]+"/bin/liquidsoap_scripts/airtime-liquidsoap.logrotate", "/etc/logrotate.d/airtime-liquidsoap")
+    shutil.copy(config["bin_dir"]+"/bin/liquidsoap_scripts/airtime-liquidsoap.logrotate", "/usr/local/etc/logrotate.d/airtime-liquidsoap")
 
 except Exception, e:
     print e

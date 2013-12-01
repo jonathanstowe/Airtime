@@ -33,7 +33,7 @@ class AirtimeIni
     const CONF_FILE_MONIT = "/etc/monit/conf.d/airtime-monit.cfg";
 
     const CONF_PYPO_GRP = "pypo";
-    const CONF_WWW_DATA_GRP = "www-data";
+    const CONF_WWW_DATA_GRP = "www";
 
     public static function IniFilesExist()
     {

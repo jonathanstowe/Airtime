@@ -1,4 +1,4 @@
-#!//usr/local/bin/bash
+#!/usr/local/bin/bash
 # Absolute path to this script
 SCRIPT=`realpath $0`
 # Absolute directory this script is in
@@ -15,7 +15,7 @@ fi
 #Check whether version of virtualenv is <= 1.4.8. If so exit install. 
 BAD_VERSION="1.4.8"
 VERSION=$(virtualenv --version)
-NEWEST_VERSION=$(echo -e "$BAD_VERSION\n$VERSION\n'" | sort -t '.' -g | tail -n 1)
+NEWEST_VERSION=$(echo -e "$BAD_VERSION\n$VERSION\n" | sort -t '.' -g | tail -n 1)
 echo -n "Ensuring python-virtualenv version > $BAD_VERSION..."
 
 VIRTUAL_ENV_DIR="/usr/local/lib/airtime/airtime_virtualenv"
