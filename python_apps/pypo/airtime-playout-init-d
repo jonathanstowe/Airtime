@@ -1,83 +1,31 @@
-#!/bin/bash
+#!/bin/sh
 
-### BEGIN INIT INFO
-# Provides:          airtime-playout
-# Required-Start:    $local_fs $remote_fs $network $syslog $all
-# Required-Stop:     $local_fs $remote_fs $network $syslog
-# Default-Start:     2 3 4 5
-# Default-Stop:      0 1 6
-# Short-Description: Manage airtime-playout daemon
-### END INIT INFO
+# $FreeBSD: head/audio/liquidsoap/files/liquidsoap.in 302141 2012-08-05 23:19:36Z dougb $
+#
+# PROVIDE: airtime_playout
+# REQUIRE: NETWORKING airtime_liquidsoap
+# KEYWORD: shutdown
+#
+# Add the following lines to /etc/rc.conf to enable airtime_playout:
+#
+# airtime_playout_enable="YES"
+#
 
-USERID=root
-NAME="Airtime Scheduler"
+. /etc/rc.subr
 
-DAEMON=/usr/lib/airtime/pypo/bin/airtime-playout
-PIDFILE=/var/run/airtime-playout.pid
+name=airtime_playout
+rcvar=airtime_playout_enable
 
-start () {
-        mkdir -p /var/log/airtime/pypo
+command=/usr/local/lib/airtime/pypo/bin/airtime-playout
 
-        start-stop-daemon --start --background --quiet --chuid $USERID:$USERID \
-            --make-pidfile --pidfile $PIDFILE --startas $DAEMON
-}
+load_rc_config $name
 
-stop () {
-        # Send TERM after 5 seconds, wait at most 30 seconds.
-        start-stop-daemon --stop --oknodo --retry TERM/5/0/30 --quiet --pidfile $PIDFILE
-        rm -f $PIDFILE
-}
+: ${airtime_playout_enable:="NO"}
+: ${airtime_playout_pidfile:="/var/run/airtime-playout.pid"}
+: ${airtime_playout_user:="root"}
+: ${airtime_playout_group:="root"}
 
-start_with_monit() {
-    start
-    monit monitor airtime-playout >/dev/null 2>&1
-}
+#required_files="${airtime_playout_config}"
+#command_args="-q -d ${playout_config}"
 
-stop_with_monit() {
-    monit unmonitor airtime-playout >/dev/null 2>&1
-    stop
-}
-
-case "${1:-''}" in
-  'start')
-            # start commands here
-            echo -n "Starting $NAME: "
-            start
-            echo "Done."
-        ;;
-  'stop')
-            # stop commands here
-            echo -n "Stopping $NAME: "
-            stop
-            echo "Done."
-        ;;
-  'restart')
-           # restart commands here
-           echo -n "Restarting $NAME: "
-           stop
-           start
-           echo "Done."
-        ;;
-  'start-with-monit')
-           # restart commands here
-           echo -n "Starting $NAME: "
-           start_with_monit
-           echo "Done."
-        ;;
-  'stop-with-monit')
-           # restart commands here
-           echo -n "Stopping $NAME: "
-           stop_with_monit
-           echo "Done."
-        ;;
-
-  'status')
-           # status commands here
-           /usr/bin/airtime-check-system
-        ;;
-  *)      # no parameter specified
-        echo "Usage: $SELF start|stop|restart|status"
-        exit 1
-        ;;
-
-esac
+run_rc_command "$1"
