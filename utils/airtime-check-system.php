@@ -38,7 +38,7 @@ class AirtimeCheck {
         // Need to check that we are superuser before running this.
         $euid = posix_geteuid();
         $user = exec('whoami');
-        if($euid != 0 && $user != "www-data"){
+        if($euid != 0 && $user != "www"){
             echo "Must be root user.\n";
             exit(1);
         }

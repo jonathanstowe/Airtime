@@ -79,10 +79,10 @@ class MediaMonitorCommon:
             os.setegid(0)
         return readable
 
-    # the function only changes the permission if its not readable by www-data
+    # the function only changes the permission if its not readable by www
     def is_readable(self, item, is_dir):
         try:
-            return self.is_user_readable(item, 'www-data', 'www-data')
+            return self.is_user_readable(item, 'www', 'www')
         except Exception:
             self.logger.warn(u"Failed to check owner/group/permissions for %s", item)
             return False

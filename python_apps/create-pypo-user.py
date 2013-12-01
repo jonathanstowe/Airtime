@@ -16,8 +16,8 @@ def create_user(username):
     print "User already exists."
   #add pypo to audio group
   os.system("adduser " + username + " audio 1>/dev/null 2>&1")
-  #add pypo to www-data group
-  os.system("adduser " + username + " www-data 1>/dev/null 2>&1")
+  #add pypo to www group
+  os.system("adduser " + username + " www 1>/dev/null 2>&1")
   #add pypo to pulse group
   os.system("adduser " + username + " pulse 1>/dev/null 2>&1")
   #add pypo to pulse-access group

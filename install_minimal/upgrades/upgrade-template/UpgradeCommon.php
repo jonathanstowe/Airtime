@@ -13,7 +13,7 @@ class UpgradeCommon {
     const CONF_FILE_API_CLIENT = "/etc/airtime/api_client.cfg";
 
     const CONF_PYPO_GRP = "pypo";
-    const CONF_WWW_DATA_GRP = "www-data";
+    const CONF_WWW_DATA_GRP = "www";
     const CONF_BACKUP_SUFFIX = "200";
     const VERSION_NUMBER = "2.0.0";
 
