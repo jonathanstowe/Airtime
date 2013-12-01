@@ -68,7 +68,7 @@ try:
     copy_dir(mm2_source, os.path.join( config["bin_dir"], "mm2" ))
 
     #copy init.d script
-    shutil.copy(config["bin_dir"]+"/airtime-media-monitor-init-d", "/usr/local/etc/rc.d/airtime-media-monitor")
+    shutil.copy(config["bin_dir"]+"/airtime-media-monitor-init-d", "/usr/local/etc/rc.d/airtime_media_monitor")
 
 except Exception, e:
     print e
