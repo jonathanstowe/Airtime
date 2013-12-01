@@ -84,7 +84,7 @@ if [ "$mediamonitor" = "f" -a "$pypo" = "f" -a "$web" = "f" ]; then
 fi
 
 # Absolute path to this script, e.g. /home/user/bin/foo.sh
-SCRIPT=`readlink -f $0`
+SCRIPT=`realpath $0`
 # Absolute path this script is in, thus /home/user/bin
 SCRIPTPATH=`dirname $SCRIPT`
 AIRTIMEROOT=$SCRIPTPATH/../
@@ -154,8 +154,8 @@ export python_service=$?
 set -e
 
 echo -e "\n******************************** Install Begin *********************************"
-rm -rf "/usr/lib/airtime"
-mkdir -p /usr/lib/airtime
+rm -rf "/usr/local/lib/airtime"
+mkdir -p /usr/local/lib/airtime
 
 if [ "$python_service" -eq "0" ]; then
     $AIRTIMEROOT/python_apps/python-virtualenv/virtualenv-install.sh
