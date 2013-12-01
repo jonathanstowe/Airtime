@@ -13,7 +13,7 @@ def copy_dir(src_dir, dest_dir):
         #print "Copying directory "+os.path.realpath(src_dir)+" to "+os.path.realpath(dest_dir)
         shutil.copytree(src_dir, dest_dir)
 
-PATH_INI_FILE = '/etc/airtime/api_client.cfg'
+PATH_INI_FILE = '/usr/local/etc/airtime/api_client.cfg'
 
 current_script_dir = get_current_script_dir()
 

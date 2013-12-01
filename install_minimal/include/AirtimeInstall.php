@@ -8,8 +8,8 @@ if (file_exists('/usr/share/php/libzend-framework-php')){
 
 class AirtimeInstall
 {
-    const CONF_DIR_BINARIES = "/usr/lib/airtime";
-    const CONF_DIR_WWW = "/usr/share/airtime";
+    const CONF_DIR_BINARIES = "/usr/local/lib/airtime";
+    const CONF_DIR_WWW = "/usr//local/share/airtime";
     const CONF_DIR_LOG = "/var/log/airtime";
 
     public static $databaseTablesCreated = false;
@@ -52,8 +52,8 @@ class AirtimeInstall
             return null;
         }
 
-        if (file_exists('/etc/airtime/airtime.conf')) {
-            $values = parse_ini_file('/etc/airtime/airtime.conf', true);
+        if (file_exists('/usr/local/etc/airtime/airtime.conf')) {
+            $values = parse_ini_file('/usr/local/etc/airtime/airtime.conf', true);
         }
         else {
             return null;
@@ -189,7 +189,7 @@ class AirtimeInstall
 
         $username = $CC_CONFIG['dsn']['username'];
         $password = $CC_CONFIG['dsn']['password'];
-        $command = "echo \"CREATE USER $username ENCRYPTED PASSWORD '$password' LOGIN CREATEDB NOCREATEUSER;\" | su postgres -c psql 2>/dev/null";
+        $command = "echo \"CREATE USER $username ENCRYPTED PASSWORD '$password' LOGIN CREATEDB NOCREATEUSER;\" | su pgsql -c psql 2>/dev/null";
 
         @exec($command, $output, $results);
         if ($results == 0) {
@@ -214,17 +214,16 @@ class AirtimeInstall
 
         $database = $CC_CONFIG['dsn']['database'];
         $username = $CC_CONFIG['dsn']['username'];
-        #$command = "echo \"CREATE DATABASE $database OWNER $username\" | su postgres -c psql  2>/dev/null";
+        #$command = "echo \"CREATE DATABASE $database OWNER $username\" | su pgsql -c psql  2>/dev/null";
 
-        $command = "su postgres -c \"psql -l | cut -f2 -d' ' | grep -w 'airtime'\";";
+        $command = "su pgsql -c \"psql -l | cut -f2 -d' ' | grep -w 'airtime'\";";
         exec($command, $output, $rv);
 
         if ($rv == 0) {
             //database already exists
             return true;
         }
-
-        $command = "su postgres -c \"createdb $database --encoding UTF8 --owner $username\"";
+        $command = "su pgsql -c \"createdb $database --encoding UTF8 --owner $username\"";
 
         @exec($command, $output, $results);
         if ($results == 0) {
@@ -330,7 +329,7 @@ class AirtimeInstall
         $con = Propel::getConnection();
         // we need to run php as commandline because we want to get the timezone in cli php.ini file
         //$defaultTimezone = exec("php -r 'echo date_default_timezone_get().PHP_EOL;'");
-        $defaultTimezone = exec("cat /etc/timezone");
+        $defaultTimezone = exec("date '+%Z'");
         $defaultTimezone = trim($defaultTimezone);
         if((!in_array($defaultTimezone, DateTimeZone::listIdentifiers()))){
         	$defaultTimezone = "UTC";

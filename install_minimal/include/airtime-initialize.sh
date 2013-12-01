@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/usr/local/bin/bash
 #-e Causes bash script to exit if any of the installers
 #return with a non-zero return value.
 
@@ -7,7 +7,6 @@ if [[ $EUID -ne 0 ]]; then
     exit 1
 fi
 
-set +e
 dist=`lsb_release -is`
 echo "Generating locales"
 for i in `ls /usr/share/airtime/locale | grep ".._.."`; do
@@ -20,14 +19,13 @@ for i in `ls /usr/share/airtime/locale | grep ".._.."`; do
         locale-gen "$i.utf8"
     fi
 done
-set -e
 
 if [ "$dist" = "Debian" ]; then
     /usr/sbin/locale-gen
 fi
 
 # Absolute path to this script, e.g. /home/user/bin/foo.sh
-SCRIPT=`readlink -f $0`
+SCRIPT=`realpath $0`
 # Absolute path this script is in, thus /home/user/bin
 SCRIPTPATH=`dirname $SCRIPT`
 
@@ -40,23 +38,22 @@ if [ "$pypo" = "t" ]; then
     python $AIRTIMEROOT/python_apps/pypo/install/pypo-initialize.py
 fi
 
-chmod 600 /etc/monit/conf.d/monit-airtime-generic.cfg
-chmod 600 /etc/monit/conf.d/monit-airtime-liquidsoap.cfg
-chmod 600 /etc/monit/conf.d/monit-airtime-media-monitor.cfg
-chmod 600 /etc/monit/conf.d/monit-airtime-playout.cfg
-chmod 600 /etc/monit/conf.d/monit-airtime-liquidsoap.cfg
+chmod 600 /usr/local/etc/monit/conf.d/monit-airtime-generic.cfg
+chmod 600 /usr/local/etc/monit/conf.d/monit-airtime-liquidsoap.cfg
+chmod 600 /usr/local/etc/monit/conf.d/monit-airtime-media-monitor.cfg
+chmod 600 /usr/local/etc/monit/conf.d/monit-airtime-playout.cfg
+chmod 600 /usr/local/etc/monit/conf.d/monit-airtime-liquidsoap.cfg
 
 # Start monit if it is not running, or restart if it is.
 # Need to ensure monit is running before Airtime daemons are run. This is
 # so we can ensure they can register with monit to monitor them when they start.
 # If monit is already running, this step is still useful as we need monit to
 # reload its config files.
-invoke-rc.d monit restart
+/usr/local/etc/rc.d/monit restart
 
 #give monit some time to boot-up before issuing commands
 sleep 1
 
-set +e
 if [ "$mediamonitor" = "t" ]; then
     monit monitor airtime-media-monitor
 fi
@@ -64,4 +61,3 @@ if [ "$pypo" = "t" ]; then
     monit monitor airtime-playout
     monit monitor airtime-liquidsoap
 fi
-set -e

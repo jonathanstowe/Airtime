@@ -12,7 +12,7 @@ require_once(__DIR__.'/airtime-constants.php');
 // The only way we get here is if we are doing a new install or a reinstall.
 // -------------------------------------------------------------------------
 
-$iniExists = file_exists("/etc/airtime/airtime.conf");
+$iniExists = file_exists("/usr/local/etc/airtime/airtime.conf");
 if ($iniExists) {
     //reinstall, Will ask if we should rewrite config files.
     require_once(AirtimeInstall::GetAirtimeSrcDir().'/application/configs/conf.php');
@@ -65,7 +65,7 @@ $db_install = getenv("nodb")!="t";
 if ($db_install) {
     
     echo "* Checking database for correct encoding".PHP_EOL;
-    exec('su -c \'psql -t -c "SHOW SERVER_ENCODING"\' postgres | grep -i "UTF.*8"', $out, $return_code);
+    exec('su pgsql -c \'psql -t -c "SHOW SERVER_ENCODING"\' | grep -i "UTF.*8"', $out, $return_code);
     if ($return_code != 0){
         echo " * Unfortunately your postgresql database has not been created using a UTF-8 encoding.".PHP_EOL;
         echo " * As of Airtime 2.1, installs will fail unless the encoding has been set to UTF-8. Please verify this is the case".PHP_EOL;

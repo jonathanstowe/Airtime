@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/usr/local/bin/bin/bash -e
 #-e Causes bash script to exit if any of the installers
 #return with a non-zero return value.
 
@@ -83,52 +83,11 @@ if [ "$mediamonitor" = "f" -a "$pypo" = "f" -a "$web" = "f" ]; then
     web="t"
 fi
 
-if [ "$disable_deb_check" == "f" ]; then
-    set +e
-    DEB=$(dpkg -s airtime 2> /dev/null | grep Status)
-    set -e
-    if [[ "$DEB" = "Status: install ok installed" ]]; then
-        echo -e "\nDebian package of Airtime detected. Please use the debian package to upgrade.\n"
-        exit 1
-    fi
-fi
-
-
-#Update apt sources.list to point to the new deb-multimedia domain.
-sed -i s/www.debian-multimedia.org/www.deb-multimedia.org/g /etc/apt/sources.list
-
 # Absolute path to this script, e.g. /home/user/bin/foo.sh
 SCRIPT=`readlink -f $0`
 # Absolute path this script is in, thus /home/user/bin
 SCRIPTPATH=`dirname $SCRIPT`
 AIRTIMEROOT=$SCRIPTPATH/../
-
-echo "* Making sure /etc/default/locale is set properly"
-set +e
-update-locale
-cat /etc/default/locale | grep -i "LANG=.*UTF-\?8"
-if [ "$?" != "0" ]; then
-    echo -e " * Fail\n"
-    echo "A non UTF-8 default locale found in /etc/default/locale. Airtime requires
-a UTF-8 locale to run. To fix this please do the following:
-
-Ubuntu:
-Put line 'en_US.UTF-8 UTF-8' (or similar) without quotes to '/var/lib/locales/supported.d/local', 
-replacing any existing lines.
-A list of supported locales is available in '/usr/share/i18n/SUPPORTED'
-Then run 'sudo dpkg-reconfigure locales'
-
-Debian:
-Run 'sudo dpkg-reconfigure locales' and use the interface to select 'en_US.UTF-8 UTF-8' (or similar).
-On the second page select this new locale as the default.
-
-After these changes have been made simply run install again.
-
-Now exiting install...
-"
-    exit 1
-fi
-set -e
 
 # Check if airtime exists already
 set +e
