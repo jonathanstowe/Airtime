@@ -13,16 +13,19 @@ pypo_script="pypocli.py"
 cd ${pypo_path}
 
 set +e
-cat /etc/default/locale | grep -i "LANG=.*UTF-\?8"
+
+
+set +e
+/usr/bin/locale | grep -i "LANG=.*UTF-\?8" >/dev/null 2>&1
 set -e
 if [ "$?" != "0" ]; then
-    echo "non UTF-8 default locale found in /etc/default/locale." > /var/log/airtime/pypo/error.log
+    echo "non UTF-8 default locale found ." > /var/log/airtime/media-monitor/error.log
     exit 1
 fi
 
 export HOME="/var/tmp/airtime/pypo/"
-export PYTHONPATH=${api_client_path}:$PYTHONPATH
-export LC_ALL=`cat /etc/default/locale | grep "LANG=" | cut -d= -f2 | tr -d "\n\""`
+export PYTHONPATH=${api_client_path}
+export LC_ALL=`/usr/bin/locale | grep "LANG=" | cut -d= -f2 | tr -d "\n\""`
 export TERM=xterm
 
 

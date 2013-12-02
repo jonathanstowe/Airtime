@@ -14,7 +14,7 @@ require_once(__DIR__.'/airtime-constants.php');
 
 AirtimeInstall::ExitIfNotRoot();
 
-if (!file_exists('/etc/airtime/airtime.conf')) {
+if (!file_exists('/usr/local/etc/airtime/airtime.conf')) {
     #airtime.conf doesn't exist, and we need it to connect to database
     #Assume Airtime is not installed.
     exit(0);

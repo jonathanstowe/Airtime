@@ -6,7 +6,7 @@ from api_clients.api_client import AirtimeApiClient
 
 def generate_liquidsoap_config(ss):
     data = ss['msg']
-    fh = open('/etc/airtime/liquidsoap.cfg', 'w')
+    fh = open('/usr/local/etc/airtime/liquidsoap.cfg', 'w')
     fh.write("################################################\n")
     fh.write("# THIS FILE IS AUTO GENERATED. DO NOT CHANGE!! #\n")
     fh.write("################################################\n")

@@ -1,7 +1,7 @@
 <?php
 date_default_timezone_set("UTC");
 
-$values = parse_ini_file('/etc/airtime/airtime.conf', true);
+$values = parse_ini_file('/usr/local/etc/airtime/airtime.conf', true);
 
 // Name of the web server user
 $CC_CONFIG['webServerUser'] = $values['general']['web_server_user'];

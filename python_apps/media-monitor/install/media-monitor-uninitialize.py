@@ -8,8 +8,8 @@ if os.geteuid() != 0:
 
 try:
     print "Waiting for media-monitor processes to stop...",
-    if (os.path.exists('/etc/init.d/airtime-media-monitor')):
-        subprocess.call("invoke-rc.d airtime-media-monitor stop", shell=True)
+    if (os.path.exists('/usr/local/etc/rc.d/airtime_media_monitor')):
+        subprocess.call("/usr/local/etc/rc.d/airtime_media_monitor stop", shell=True)
         print "OK"
     else:
         print "Wasn't running"

@@ -191,7 +191,7 @@ class PypoFetch(Thread):
 
 
             self.logger.info("Restarting Liquidsoap")
-            subprocess.call('/etc/init.d/airtime-liquidsoap restart', shell=True)
+            subprocess.call('/usr/local/etc/rc.d/airtime_liquidsoap restart', shell=True)
 
             #Wait here and poll Liquidsoap until it has started up
             self.logger.info("Waiting for Liquidsoap to start")
@@ -220,7 +220,7 @@ class PypoFetch(Thread):
 
         setting = sorted(setting.items())
         try:
-            fh = open('/etc/airtime/liquidsoap.cfg', 'r')
+            fh = open('/usr/local/etc/airtime/liquidsoap.cfg', 'r')
         except IOError, e:
             #file does not exist
             self.restart_liquidsoap()

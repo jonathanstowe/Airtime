@@ -27,7 +27,7 @@ if (os.geteuid() != 0):
 
 # loading config file
 try:
-    config = ConfigObj('/etc/airtime/media-monitor.cfg')
+    config = ConfigObj('/usr/local/etc/airtime/media-monitor.cfg')
 except Exception, e:
     print('Error loading config file: %s', e)
     sys.exit()

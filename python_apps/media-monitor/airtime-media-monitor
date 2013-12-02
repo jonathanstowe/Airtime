@@ -18,7 +18,7 @@ set +e
 /usr/bin/locale | grep -i "LANG=.*UTF-\?8" >/dev/null 2>&1
 set -e
 if [ "$?" != "0" ]; then
-    echo "non UTF-8 default locale found in /etc/default/locale." > /var/log/airtime/media-monitor/error.log
+    echo "non UTF-8 default locale found ." > /var/log/airtime/media-monitor/error.log
     exit 1
 fi
 

@@ -5,12 +5,12 @@
  * creating connections to a database, backing up config files etc.
  */
 class UpgradeCommon {
-    const CONF_FILE_AIRTIME = "/etc/airtime/airtime.conf";
-    const CONF_FILE_PYPO = "/etc/airtime/pypo.cfg";
-    const CONF_FILE_RECORDER = "/etc/airtime/recorder.cfg";
-    const CONF_FILE_LIQUIDSOAP = "/etc/airtime/liquidsoap.cfg";
-    const CONF_FILE_MEDIAMONITOR = "/etc/airtime/media-monitor.cfg";
-    const CONF_FILE_API_CLIENT = "/etc/airtime/api_client.cfg";
+    const CONF_FILE_AIRTIME = "/usr/local/etc/airtime/airtime.conf";
+    const CONF_FILE_PYPO = "/usr/local/etc/airtime/pypo.cfg";
+    const CONF_FILE_RECORDER = "/usr/local/etc/airtime/recorder.cfg";
+    const CONF_FILE_LIQUIDSOAP = "/usr/local/etc/airtime/liquidsoap.cfg";
+    const CONF_FILE_MEDIAMONITOR = "/usr/local/etc/airtime/media-monitor.cfg";
+    const CONF_FILE_API_CLIENT = "/usr/local/etc/airtime/api_client.cfg";
 
     const CONF_PYPO_GRP = "pypo";
     const CONF_WWW_DATA_GRP = "www";
@@ -105,32 +105,32 @@ class UpgradeCommon {
     }
 
     /**
-     * This function creates the /etc/airtime configuration folder
+     * This function creates the /usr/local/etc/airtime configuration folder
      * and copies the default config files to it.
      */
     public static function CreateIniFiles($suffix)
     {
-        if (!file_exists("/etc/airtime/")){
-            if (!mkdir("/etc/airtime/", 0755, true)){
-                echo "Could not create /etc/airtime/ directory. Exiting.";
+        if (!file_exists("/usr/local/etc/airtime/")){
+            if (!mkdir("/usr/local/etc/airtime/", 0755, true)){
+                echo "Could not create /usr/local/etc/airtime/ directory. Exiting.";
                 exit(1);
             }
         }
 
         if (!copy(__DIR__."/airtime.conf.$suffix", self::CONF_FILE_AIRTIME)){
-            echo "Could not copy airtime.conf to /etc/airtime/. Exiting.";
+            echo "Could not copy airtime.conf to /usr/local/etc/airtime/. Exiting.";
             exit(1);
         }
         if (!copy(__DIR__."/pypo.cfg.$suffix", self::CONF_FILE_PYPO)){
-            echo "Could not copy pypo.cfg to /etc/airtime/. Exiting.";
+            echo "Could not copy pypo.cfg to /usr/local/etc/airtime/. Exiting.";
             exit(1);
         }
         if (!copy(__DIR__."/recorder.cfg.$suffix", self::CONF_FILE_RECORDER)){
-            echo "Could not copy recorder.cfg to /etc/airtime/. Exiting.";
+            echo "Could not copy recorder.cfg to /usr/local/etc/airtime/. Exiting.";
             exit(1);
         }
         if (!copy(__DIR__."/api_client.cfg.$suffix", self::CONF_FILE_API_CLIENT)){
-            echo "Could not copy airtime-monit.cfg to /etc/monit/conf.d/. Exiting.";
+            echo "Could not copy airtime-monit.cfg to /usr/local/etc/monit/conf.d/. Exiting.";
             exit(1);
         }
     }

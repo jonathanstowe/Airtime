@@ -63,10 +63,10 @@ class AirtimeCheck {
 
     public static function GetAirtimeConf()
     {
-        $ini = parse_ini_file("/etc/airtime/airtime.conf", true);
+        $ini = parse_ini_file("/usr/local/etc/airtime/airtime.conf", true);
 
         if ($ini === false){
-            echo "Error reading /etc/airtime/airtime.conf.".PHP_EOL;
+            echo "Error reading /usr/local/etc/airtime/airtime.conf.".PHP_EOL;
             exit;
         }
 

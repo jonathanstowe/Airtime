@@ -24,7 +24,7 @@ showhelp () {
 rabbitmq_install () {
     RABBITMQ_VHOST="/airtime"
     RABBITMQ_USER="airtime"
-    RABBITMQ_PASSWORD=$(awk -F ' = ' '{if (! ($0 ~ /^;/) && $0 ~ /^password/ ) print $2}' /etc/airtime/airtime.conf)
+    RABBITMQ_PASSWORD=$(awk -F ' = ' '{if (! ($0 ~ /^;/) && $0 ~ /^password/ ) print $2}' /usr/local/etc/airtime/airtime.conf)
     EXCHANGES="airtime-pypo|pypo-fetch|airtime-media-monitor|media-monitor"
 
     rabbitmqctl list_vhosts | grep $RABBITMQ_VHOST
@@ -102,11 +102,11 @@ if [ "$result" -eq "0" ]; then
     #Make sure any straggler config files are removed. Reason for this is that they may be from
     #an older version of Airtime, but since there no database installed, we have no idea how to 
     #handle these (what version are they from?). 
-    rm -f "/etc/airtime/airtime.conf"
-    rm -f "/etc/airtime/api_client.cfg"
-    rm -f "/etc/airtime/liquidsoap.cfg"
-    rm -f "/etc/airtime/media-monitor.cfg"
-    rm -f "/etc/airtime/pypo.cfg"
+    rm -f "/usr/local/etc/airtime/airtime.conf"
+    rm -f "/usr/local/etc/airtime/api_client.cfg"
+    rm -f "/usr/local/etc/airtime/liquidsoap.cfg"
+    rm -f "/usr/local/etc/airtime/media-monitor.cfg"
+    rm -f "/usr/local/etc/airtime/pypo.cfg"
 elif [ "$result" -eq "1" -a "$reinstall" = "f" ]; then
     echo " * Same version of Airtime already installed! Reusing database."
     nodb='t'

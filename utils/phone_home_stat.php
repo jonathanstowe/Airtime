@@ -17,7 +17,7 @@ exitIfNotRoot();
 
 date_default_timezone_set("UTC");
 
-$values = parse_ini_file('/etc/airtime/airtime.conf', true);
+$values = parse_ini_file('/usr/local/etc/airtime/airtime.conf', true);
 $CC_CONFIG['phpDir'] = $values['general']['airtime_dir'];
 require_once($CC_CONFIG['phpDir'].'/application/configs/conf.php');
 $CC_CONFIG = Config::getConfig();

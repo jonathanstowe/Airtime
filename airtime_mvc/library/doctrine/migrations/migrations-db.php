@@ -1,6 +1,6 @@
 <?php
 
-$ini = parse_ini_file('/etc/airtime/airtime.conf', true);
+$ini = parse_ini_file('/usr/local/etc/airtime/airtime.conf', true);
 
 return array(
     'dbname' => $ini['database']['dbname'],

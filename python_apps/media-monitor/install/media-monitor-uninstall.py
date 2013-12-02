@@ -8,7 +8,7 @@ if os.geteuid() != 0:
     print "Please run this as root."
     sys.exit(1)
 
-PATH_INI_FILE = '/etc/airtime/media-monitor.cfg'
+PATH_INI_FILE = '/usr/local/etc/airtime/media-monitor.cfg'
 
 def remove_path(path):
     os.system('rm -rf "%s"' % path)
@@ -19,7 +19,7 @@ def get_current_script_dir():
   return current_script_dir[0:index]
 
 def remove_monit_file():
-    os.system("rm -f /etc/monit/conf.d/monit-airtime-media-monitor.cfg")
+    os.system("rm -f /usr/local/etc/monit.d/monit-airtime-media-monitor.cfg")
 
 try:
     # load config file
@@ -29,9 +29,8 @@ try:
         print 'Error loading config file: ', e
         sys.exit(1)
 
-    os.system("invoke-rc.d airtime-media-monitor stop")
-    os.system("rm -f /etc/init.d/airtime-media-monitor")
-    os.system("update-rc.d -f airtime-media-monitor remove >/dev/null 2>&1")
+    os.system("/usr/local/etc/rc.d/airtime_media_monitor stop")
+    os.system("rm -f /usr/local/etc/rc.d/airtime_media_monitor")
 
     print "Removing monit file"
     remove_monit_file()
@@ -40,7 +39,7 @@ try:
     remove_path(config["log_dir"])
 
     print "Removing symlinks"
-    os.system("rm -f /usr/bin/airtime-media-monitor")
+    os.system("rm -f /usr/local/bin/airtime-media-monitor")
 
     print "Removing application files"
     remove_path(config["bin_dir"])

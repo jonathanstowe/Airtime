@@ -665,7 +665,7 @@ class Application_Model_Preference
 
     public static function GetSystemInfo($returnArray=false, $p_testing=false)
     {
-        exec('/usr/bin/airtime-check-system --no-color', $output);
+        exec('/usr/local/bin/airtime-check-system --no-color', $output);
         $output = preg_replace('/\s+/', ' ', $output);
 
         $systemInfoArray = array();
@@ -774,7 +774,7 @@ class Application_Model_Preference
 
     public static function GetInstallMethod()
     {
-        $easy_install = file_exists('/usr/bin/airtime-easy-setup');
+        $easy_install = file_exists('/usr/local/bin/airtime-easy-setup');
         $debian_install = file_exists('/var/lib/dpkg/info/airtime.config');
         if ($debian_install) {
             if ($easy_install) {

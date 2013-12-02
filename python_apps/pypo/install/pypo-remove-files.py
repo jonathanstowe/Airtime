@@ -7,7 +7,7 @@ if os.geteuid() != 0:
     print "Please run this as root."
     sys.exit(1)
 
-PATH_INI_FILE = '/etc/airtime/pypo.cfg'
+PATH_INI_FILE = '/usr/local/etc/airtime/pypo.cfg'
 
 def remove_file(path):
     try:
@@ -25,12 +25,12 @@ except Exception, e:
 try:
     #remove log rotate script
     print " * Removing Pypo Log Rotate Script"
-    remove_file("/etc/logrotate.d/airtime-liquidsoap")
+    remove_file("/usr/local/etc/logrotate.d/airtime-liquidsoap")
 
     #remove init.d script
     print " * Removing Pypo init.d Script"
-    remove_file("/etc/init.d/airtime-playout")
-    remove_file("/etc/init.d/airtime-liquidsoap")
+    remove_file("/usr/local/etc/rc.d/airtime_playout")
+    remove_file("/usr/local/etc/rc.d/airtime_liquidsoap")
 
     #remove bin, cache, tmp and file dir
     print " * Removing Pypo Program Directory"
@@ -46,9 +46,9 @@ try:
 
     #remove monit files
     print " * Removing Pypo Monit Files"
-    remove_file("/etc/monit/conf.d/monit-airtime-playout.cfg")
-    remove_file("/etc/monit/conf.d/monit-airtime-liquidsoap.cfg")
-    remove_file("/etc/monit/conf.d/monit-airtime-generic.cfg")
+    remove_file("/usr/local/etc/monit.d/monit-airtime-playout.cfg")
+    remove_file("/usr/local/etc/monit.d/monit-airtime-liquidsoap.cfg")
+    remove_file("/usr/local/etc/monit.d/monit-airtime-generic.cfg")
 
 except Exception, e:
     print e

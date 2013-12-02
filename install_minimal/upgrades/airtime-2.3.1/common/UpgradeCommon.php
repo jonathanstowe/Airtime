@@ -3,11 +3,11 @@
  * creating connections to a database, backing up config files etc.
  */
 class UpgradeCommon{
-    const CONF_FILE_AIRTIME      = "/etc/airtime/airtime.conf";
-    const CONF_FILE_PYPO         = "/etc/airtime/pypo.cfg";
-    const CONF_FILE_LIQUIDSOAP   = "/etc/airtime/liquidsoap.cfg";
-    const CONF_FILE_MEDIAMONITOR = "/etc/airtime/media-monitor.cfg";
-    const CONF_FILE_API_CLIENT   = "/etc/airtime/api_client.cfg";
+    const CONF_FILE_AIRTIME      = "/usr/local/etc/airtime/airtime.conf";
+    const CONF_FILE_PYPO         = "/usr/local/etc/airtime/pypo.cfg";
+    const CONF_FILE_LIQUIDSOAP   = "/usr/local/etc/airtime/liquidsoap.cfg";
+    const CONF_FILE_MEDIAMONITOR = "/usr/local/etc/airtime/media-monitor.cfg";
+    const CONF_FILE_API_CLIENT   = "/usr/local/etc/airtime/api_client.cfg";
 
     const CONF_PYPO_GRP          = "pypo";
     const CONF_WWW_DATA_GRP      = "www";
@@ -108,14 +108,14 @@ class UpgradeCommon{
     }
 
     /**
-     * This function creates the /etc/airtime configuration folder
+     * This function creates the /usr/local/etc/airtime configuration folder
      * and copies the default config files to it.
      */
     public static function CreateIniFiles($suffix)
     {
-        if (!file_exists("/etc/airtime/")){
-            if (!mkdir("/etc/airtime/", 0755, true)){
-                echo "Could not create /etc/airtime/ directory. Exiting.";
+        if (!file_exists("/usr/local/etc/airtime/")){
+            if (!mkdir("/usr/local/etc/airtime/", 0755, true)){
+                echo "Could not create /usr/local/etc/airtime/ directory. Exiting.";
                 exit(1);
             }
         }

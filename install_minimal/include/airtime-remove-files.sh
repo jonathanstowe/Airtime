@@ -18,9 +18,9 @@ SCRIPTPATH=`dirname $SCRIPT`
 
 AIRTIMEROOT=$SCRIPTPATH/../../
 
-rm -f /etc/cron.d/airtime-crons
-rm -f /etc/monit/conf.d/monit-airtime*
-rm -f /etc/logrotate.d/airtime-php
+rm -f /usr/local/etc/cron.d/airtime-crons
+rm -f /usr/local/etc/monit/conf.d/monit-airtime*
+rm -f /usr/local/etc/logrotate.d/airtime-php
 
 echo "* API Client"
 python $AIRTIMEROOT/python_apps/api_clients/install/api_client_uninstall.py

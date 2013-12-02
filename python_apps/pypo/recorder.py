@@ -34,7 +34,7 @@ def api_client(logger):
 
 # loading config file
 try:
-    config = ConfigObj('/etc/airtime/pypo.cfg')
+    config = ConfigObj('/usr/local/etc/airtime/pypo.cfg')
 except Exception, e:
     print ('Error loading config file: %s', e)
     sys.exit()

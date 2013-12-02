@@ -1069,7 +1069,7 @@ SQL;
         $LIQUIDSOAP_ERRORS = array('TagLib: MPEG::Properties::read() -- Could not find a valid last MPEG frame in the stream.');
 
         // Ask Liquidsoap if file is playable
-        $ls_command = sprintf('/usr/bin/airtime-liquidsoap -v -c "output.dummy(audio_to_stereo(single(%s)))" 2>&1',
+        $ls_command = sprintf('/usr/local/bin/airtime-liquidsoap -v -c "output.dummy(audio_to_stereo(single(%s)))" 2>&1',
             escapeshellarg($audio_file));
 
         $command = "export PATH=/usr/local/bin:/usr/bin:/bin/usr/bin/ && $ls_command";

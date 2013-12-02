@@ -137,7 +137,7 @@ configure_locale()
 
 # loading config file
 try:
-    config = ConfigObj('/etc/airtime/pypo.cfg')
+    config = ConfigObj('/usr/local/etc/airtime/pypo.cfg')
 except Exception, e:
     logger.error('Error loading config file: %s', e)
     sys.exit(1)

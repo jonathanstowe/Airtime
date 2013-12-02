@@ -13,7 +13,7 @@ def remove_file(path):
     except Exception, e:
         pass
 
-PATH_INI_FILE = '/etc/airtime/media-monitor.cfg'
+PATH_INI_FILE = '/usr/local/etc/airtime/media-monitor.cfg'
 
 # load config file
 try:
@@ -25,7 +25,7 @@ except Exception, e:
 try:
     #remove init.d script
     print " * Removing Media-Monitor init.d Script"
-    remove_file("/etc/init.d/airtime-media-monitor")
+    remove_file("/usr/local/etc/rc.d/airtime_media_monitor")
 
     #remove bin dir
     print " * Removing Media-Monitor Program Directory"
@@ -37,8 +37,8 @@ try:
 
     #remove monit files
     print " * Removing Media-Monitor Monit Files"
-    remove_file("/etc/monit/conf.d/monit-airtime-media-monitor.cfg")
-    remove_file("/etc/monit/conf.d/monit-airtime-generic.cfg")
+    remove_file("/usr/local/etc/monit.d/monit-airtime-media-monitor.cfg")
+    remove_file("/usr/local/etc/monit.d/monit-airtime-generic.cfg")
     
 except Exception, e:
     print e

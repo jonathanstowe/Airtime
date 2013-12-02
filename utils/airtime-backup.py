@@ -26,7 +26,7 @@ if backup_config:
     backup_config_dir = "airtime_backup/config"
     os.mkdir(backup_config_dir)
     #TODO check if directory exists
-    config_dir = "/etc/airtime"
+    config_dir = "/usr/local/etc/airtime"
     files = os.listdir()
     for f in files:
         shutil.copy(os.path.join(config_dir, f), \

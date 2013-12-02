@@ -2,7 +2,7 @@
 The purpose of this script is to consolidate into one location where 
 we need to update database host, dbname, username and password.
 
-This script reads from /etc/airtime/airtime.conf.
+This script reads from /usr/local/etc/airtime/airtime.conf.
 """
 import os
 import sys
@@ -14,7 +14,7 @@ if os.geteuid() != 0:
     print "Please run this as root."
     sys.exit(1)
 
-airtime_conf = '/etc/airtime/airtime.conf'
+airtime_conf = '/usr/local/etc/airtime/airtime.conf'
 
 #Read the universal values
 parser = ConfigParser.SafeConfigParser()
