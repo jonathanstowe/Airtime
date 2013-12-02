@@ -488,7 +488,7 @@ class AirtimeInstall
         $minute = rand(0,59);
 
         $fp = fopen('/etc/cron.d/airtime-crons','w');
-        fwrite($fp, "$minute $hour * * * root /usr/lib/airtime/utils/phone_home_stat\n");
+        fwrite($fp, "$minute $hour * * * root /usr/local/lib/airtime/utils/phone_home_stat\n");
         fclose($fp);
     }
 

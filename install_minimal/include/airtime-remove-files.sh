@@ -38,7 +38,7 @@ rm -f /usr/bin/airtime-test-soundcard
 rm -f /usr/bin/airtime-test-stream
 rm -f /usr/bin/airtime-silan
 
-rm -rf /usr/lib/airtime
+rm -rf /usr/local/lib/airtime
 rm -rf /usr/share/airtime
 
 rm -rf /var/log/airtime

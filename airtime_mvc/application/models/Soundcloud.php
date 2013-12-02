@@ -90,7 +90,7 @@ class Application_Model_Soundcloud
 
     public static function uploadSoundcloud($id)
     {
-        $cmd = "/usr/lib/airtime/utils/soundcloud-uploader $id > /dev/null &";
+        $cmd = "/usr/local/lib/airtime/utils/soundcloud-uploader $id > /dev/null &";
         Logging::info("Uploading soundcloud with command: $cmd");
         exec($cmd);
     }

@@ -3,7 +3,7 @@
 #  Determine directories, files
 #-------------------------------------------------------------------------------
 
-virtualenv_bin="/usr/lib/airtime/airtime_virtualenv/bin/"
+virtualenv_bin="/usr/local/lib/airtime/airtime_virtualenv/bin/"
 . ${virtualenv_bin}activate
 
 # Absolute path to this script

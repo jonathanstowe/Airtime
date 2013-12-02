@@ -45,7 +45,7 @@ SCRIPTPATH=`dirname $SCRIPT`
 
 rabbitmq_uninstall
 
-virtualenv_bin="/usr/lib/airtime/airtime_virtualenv/bin/"
+virtualenv_bin="/usr/local/lib/airtime/airtime_virtualenv/bin/"
 . ${virtualenv_bin}activate
 
 #Uninitialize Airtime

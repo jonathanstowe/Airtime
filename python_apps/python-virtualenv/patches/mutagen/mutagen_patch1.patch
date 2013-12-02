@@ -1,7 +1,7 @@
-Index: /usr/lib/airtime/airtime_virtualenv/lib/python2.6/site-packages/mutagen/mp3.py
+Index: /usr/local/lib/airtime/airtime_virtualenv/lib/python2.6/site-packages/mutagen/mp3.py
 ===================================================================
---- /usr/lib/airtime/airtime_virtualenv/lib/python2.6/site-packages/mutagen/mp3.py	(revision 108)
-+++ /usr/lib/airtime/airtime_virtualenv/lib/python2.6/site-packages/mutagen/mp3.py	(working copy)
+--- /usr/local/lib/airtime/airtime_virtualenv/lib/python2.6/site-packages/mutagen/mp3.py	(revision 108)
++++ /usr/local/lib/airtime/airtime_virtualenv/lib/python2.6/site-packages/mutagen/mp3.py	(working copy)
 @@ -151,15 +151,16 @@
          self.sample_rate = self.__RATES[self.version][sample_rate]
  

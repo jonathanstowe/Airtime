@@ -8,7 +8,7 @@ import json
 import shutil
 import commands
 
-sys.path.append('/usr/lib/airtime/media-monitor/mm2/')
+sys.path.append('/usr/local/lib/airtime/media-monitor/mm2/')
 from media.monitor.pure import is_file_supported
 
 # create logger

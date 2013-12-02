@@ -22,7 +22,7 @@ tmp_dir = '/var/tmp/airtime/pypo/tmp/'
 # Do *not* include trailing slash !!         #
 ############################################
 cache_base_dir = '/var/tmp/airtime/pypo'
-bin_dir = '/usr/lib/airtime/pypo'
+bin_dir = '/usr/local/lib/airtime/pypo'
 log_base_dir = '/var/log/airtime'
 pypo_log_dir = '/var/log/airtime/pypo'
 liquidsoap_log_dir = '/var/log/airtime/pypo-liquidsoap'

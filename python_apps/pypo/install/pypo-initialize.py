@@ -4,7 +4,7 @@ from subprocess import Popen, PIPE
 import subprocess
 import sys
 import os
-sys.path.append('/usr/lib/airtime/')
+sys.path.append('/usr/local/lib/airtime/')
 from api_clients import api_client
 from configobj import ConfigObj
 
@@ -39,7 +39,7 @@ def get_os_codename():
     return ("unknown", "unknown")
 
 PATH_INI_FILE = '/usr/local/etc/airtime/pypo.cfg'
-PATH_LIQUIDSOAP_BIN = '/usr/local/usr/lib/airtime/pypo/bin/liquidsoap_bin'
+PATH_LIQUIDSOAP_BIN = '/usr/local/usr/local/lib/airtime/pypo/bin/liquidsoap_bin'
 
 #any debian/ubuntu codename in this et will automatically use the natty liquidsoap binary
 arch_map = dict({"32bit":"i386", "64bit":"amd64"})
