@@ -225,6 +225,9 @@ class AirtimeInstall
         }
         $command = "su pgsql -c \"createdb $database --encoding UTF8 --owner $username\"";
 
+/*
+ *       $command = "sudo -i -u postgres psql postgres -c \"CREATE DATABASE ".$database." WITH ENCODING 'UTF8' TEMPLATE template0 OWNER ".$username."\"";
+*/
         @exec($command, $output, $results);
         if ($results == 0) {
             echo "  * Database '{$CC_CONFIG['dsn']['database']}' created.".PHP_EOL;

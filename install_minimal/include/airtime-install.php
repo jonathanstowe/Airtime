@@ -20,6 +20,12 @@ if (!AirtimeInstall::checkPHPVersion())
     exit(1);
 }
 
+if (PHP_VERSION_ID < 50400) //PHP 5.4
+{
+    echo("ERROR: Your PHP version is too old!\nAirtime requires PHP 5.4 or greater.\n");
+    exit(1);
+}
+
 if ($iniExists) {
     //reinstall, Will ask if we should rewrite config files.
     require_once(AirtimeInstall::GetAirtimeSrcDir().'/application/configs/conf.php');
