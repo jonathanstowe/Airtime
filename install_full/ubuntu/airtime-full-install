@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/usr/bin/env bash -e
 #
 # Auto install script for airtime on Ubuntu
 #

@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/usr/bin/env bash -e
 
 debug="f"
 
@@ -23,17 +23,17 @@ do
 done
 
 
-virtualenv_bin="/usr/lib/airtime/airtime_virtualenv/bin/"
+virtualenv_bin="/usr/local/lib/airtime/airtime_virtualenv/bin/"
 . ${virtualenv_bin}activate
 
 export HOME="/var/tmp/airtime/pypo/"
-api_client_path="/usr/lib/airtime/"
+api_client_path="/usr/local/lib/airtime/"
 if [ $debug = "t" ]; then
-    ls_path="/usr/bin/airtime-liquidsoap --verbose -f"
+    ls_path="/usr/local/bin/airtime-liquidsoap --verbose -f"
 else
-    ls_path="/usr/bin/airtime-liquidsoap --verbose -f -d"
+    ls_path="/usr/local/bin/airtime-liquidsoap --verbose -f -d"
 fi
-ls_param="/usr/lib/airtime/pypo/bin/liquidsoap_scripts/ls_script.liq"
+ls_param="/usr/local/lib/airtime/pypo/bin/liquidsoap_scripts/ls_script.liq"
 
 export PYTHONPATH=${api_client_path}
 

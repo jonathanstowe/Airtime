@@ -1,4 +1,4 @@
-#!/usr/local/bin/bash
+#!/usr/bin/env bash
 # Absolute path to this script
 SCRIPT=`realpath $0`
 # Absolute directory this script is in

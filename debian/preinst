@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #preinst script for airtime
 
 set -e

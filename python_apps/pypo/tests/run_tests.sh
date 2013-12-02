@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 which py.test
 pytest_exist=$?

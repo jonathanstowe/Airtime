@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Debconf config script for airtime
 
 set -e
