@@ -11,4 +11,4 @@ SCRIPT=`realpath $0`
 SCRIPTPATH=`dirname $SCRIPT`
 
 cd ${SCRIPTPATH}/../ 
-timeout 45 python pyponotify.py "$@"
+gtimeout 45 python pyponotify.py "$@"

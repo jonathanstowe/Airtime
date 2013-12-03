@@ -16,11 +16,11 @@ def notify_stream(m)
   #escaping the apostrophe, and then starting a new string right after it. This is why we use 3 apostrophes.
   json_str = string.replace(pattern="'",(fun (s) -> "'\''"), json_str)
   command = "/usr/local/lib/airtime/pypo/bin/liquidsoap_scripts/notify.sh --webstream='#{json_str}' --media-id=#{!current_dyn_id} &"
-  
   if !current_dyn_id != "-1" then
-    log(command)
-    system(command)
+     log(command)
+     system(command)
   end
+
 end
 
 # A function applied to each metadata chunk
@@ -144,29 +144,15 @@ def output_to(output_type, type, bitrate, host, port, pass, mount_point, url, de
             %include "ogg.liq"
         end
 
-        %ifencoder %opus
-        if type == "opus" then
-            %include "opus.liq"
-        end
-        %endif
 
-        %ifencoder %aac
         if type == "aac" then
             %include "aac.liq"
         end
-        %endif
 
-        %ifencoder %aacplus
         if type == "aacplus" then
             %include "aacplus.liq"
         end
-        %endif
 
-        %ifencoder %fdkaac
-        if type == "fdkaac" then
-            %include "fdkaac.liq"
-        end
-        %endif
     else
         user_ref = ref user
         if user == "" then
@@ -201,17 +187,13 @@ def output_to(output_type, type, bitrate, host, port, pass, mount_point, url, de
             %include "mp3.liq"
         end
 
-        %ifencoder %aac
         if type == "aac" then
             %include "aac.liq"
         end
-        %endif
         
-        %ifencoder %aacplus
         if type == "aacplus" then
             %include "aacplus.liq"
         end
-        %endif
     end
 end
 
