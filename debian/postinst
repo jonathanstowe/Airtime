@@ -3,13 +3,13 @@
 
 set -e
 
-. /usr/share/debconf/confmodule
+. /usr/local/share/debconf/confmodule
 
 if [ "$DPKG_DEBUG" = "developer" ]; then
     set -x
 fi
 
-wwwdir="/usr/share/airtime"
+wwwdir="/usr/local/share/airtime"
 tmpdir="/var/lib/airtime/tmp"
 configdir="/etc/airtime"
 includefile="${configdir}/apache.conf"

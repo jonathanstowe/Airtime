@@ -15,7 +15,7 @@ def get_current_script_dir():
 
 try:
     current_script_dir = get_current_script_dir()
-    shutil.copy(current_script_dir+"/../airtime-icecast-status.xsl", "/usr/share/icecast2/web")
+    shutil.copy(current_script_dir+"/../airtime-icecast-status.xsl", "/usr/local/share/icecast2/web")
 
 except Exception, e:
     print "exception: %s" % e

@@ -145,9 +145,9 @@ else
         echo "Apache config for Airtime already exists..."
     fi
 
-    if [ ! -d /usr/share/airtime/public ]; then
+    if [ ! -d /usr/local/share/airtime/public ]; then
         echo "Creating Apache web root directory..."
-        mkdir -p /usr/share/airtime/public/
+        mkdir -p /usr/local/share/airtime/public/
     else
         echo "Airtime web root directory already exists..."
     fi

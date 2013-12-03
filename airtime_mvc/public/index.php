@@ -40,8 +40,8 @@ set_include_path(APPLICATION_PATH . '/models' . PATH_SEPARATOR . get_include_pat
 set_include_path(APPLICATION_PATH . '/controllers/plugins' . PATH_SEPARATOR . get_include_path());
 
 //Zend framework
-if (file_exists('/usr/share/php/libzend-framework-php')) {
-    set_include_path('/usr/share/php/libzend-framework-php' . PATH_SEPARATOR . get_include_path());
+if (file_exists('/usr/local/share/php/libzend-framework-php')) {
+    set_include_path('/usr/local/share/php/libzend-framework-php' . PATH_SEPARATOR . get_include_path());
 }
 
 /** Zend_Application */

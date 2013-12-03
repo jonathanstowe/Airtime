@@ -39,7 +39,7 @@ rm -f /usr/bin/airtime-test-stream
 rm -f /usr/bin/airtime-silan
 
 rm -rf /usr/local/lib/airtime
-rm -rf /usr/share/airtime
+rm -rf /usr/local/share/airtime
 
 rm -rf /var/log/airtime
 rm -rf /var/tmp/airtime
