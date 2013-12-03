@@ -1084,7 +1084,7 @@ class Phing {
         // If we are using this via PEAR then check for the file in the data dir
         // This is a bit of a hack, but works better than previous solution of assuming
         // data_dir is on the include_path.
-        $dataDir = '/usr/share/php/data';
+        $dataDir = '/usr/local/share/php/data';
         if ($dataDir{0} != '@') { // if we're using PEAR then the @ DATA-DIR @ token will have been substituted.
             $testPath = $dataDir . DIRECTORY_SEPARATOR . $path;
             if (file_exists($testPath)) {

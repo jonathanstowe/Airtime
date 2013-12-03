@@ -39,8 +39,8 @@ require_once 'propel/runtime/lib/Propel.php';
 Propel::init($CC_CONFIG['phpDir']."/application/configs/airtime-conf-production.php");
 
 //Zend framework
-if (file_exists('/usr/share/php/libzend-framework-php')){
-    set_include_path('/usr/share/php/libzend-framework-php' . PATH_SEPARATOR . get_include_path());
+if (file_exists('/usr/local/share/php/libzend-framework-php')){
+    set_include_path('/usr/local/share/php/libzend-framework-php' . PATH_SEPARATOR . get_include_path());
 }
 
 require_once('Zend/Loader/Autoloader.php');

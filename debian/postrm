@@ -3,8 +3,8 @@
 
 set -e
 
-if [ -f /usr/share/debconf/confmodule ]; then
-  . /usr/share/debconf/confmodule
+if [ -f /usr/local/share/debconf/confmodule ]; then
+  . /usr/local/share/debconf/confmodule
 fi
 
 if [ "$DPKG_DEBUG" = "developer" ]; then
@@ -13,7 +13,7 @@ fi
 
 package_name="airtime"
 datadir="/srv/airtime"
-wwwdir="/usr/share/airtime"
+wwwdir="/usr/local/share/airtime"
 tmpdir="/var/lib/airtime/tmp"
 configdir="/etc/airtime"
 
@@ -37,8 +37,8 @@ case "$1" in
 			rm -f ${tmpdir}/install_minimal/distribute-0.6.10.tar.gz || true
 		fi
 
-                if [ -f /usr/share/python-virtualenv/distribute-0.6.10.tar.gz ]; then
-                        rm -f /usr/share/python-virtualenv/distribute-0.6.10.tar.gz || true
+                if [ -f /usr/local/share/python-virtualenv/distribute-0.6.10.tar.gz ]; then
+                        rm -f /usr/local/share/python-virtualenv/distribute-0.6.10.tar.gz || true
                 fi
 
                 if [ -d ${tmpdir}/python_apps/pypo/liquidsoap_bin ]; then
@@ -89,8 +89,8 @@ case "$1" in
 
     servers="apache2"
     # may not exist if package was manually installed
-    if [ -r /usr/share/wwwconfig-common/restart.sh ]; then
-      . /usr/share/wwwconfig-common/restart.sh || true
+    if [ -r /usr/local/share/wwwconfig-common/restart.sh ]; then
+      . /usr/local/share/wwwconfig-common/restart.sh || true
       echo $error
     fi
 

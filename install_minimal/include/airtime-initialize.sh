@@ -9,7 +9,7 @@ fi
 
 dist=`lsb_release -is`
 echo "Generating locales"
-for i in `ls /usr/share/airtime/locale | grep ".._.."`; do
+for i in `ls /usr/local/share/airtime/locale | grep ".._.."`; do
     if [ "$dist" = "Debian" ]; then
         grep -qi "^$i" /etc/locale.gen
         if [ $? -ne 0 ]; then

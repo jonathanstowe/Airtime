@@ -10,7 +10,7 @@ server {
 	        listen               80;
 	        server_name          airtime; #change to your host
 	        include              mime.types;
-                root                 /usr/share/airtime/public;
+                root                 /usr/local/share/airtime/public;
                 access_log           /var/log/airtime.access.log;
                 error_log            /var/log/airtime.error.log;
                 index                index.php;

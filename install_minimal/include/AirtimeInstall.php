@@ -1,8 +1,8 @@
 <?php
 set_include_path(__DIR__.'/../../airtime_mvc/library' . PATH_SEPARATOR . get_include_path());
 //Zend framework
-if (file_exists('/usr/share/php/libzend-framework-php')){
-    set_include_path('/usr/share/php/libzend-framework-php' . PATH_SEPARATOR . get_include_path());
+if (file_exists('/usr/local/share/php/libzend-framework-php')){
+    set_include_path('/usr/local/share/php/libzend-framework-php' . PATH_SEPARATOR . get_include_path());
 }
 
 #require_once('Zend/Loader/Autoloader.php');
@@ -498,8 +498,8 @@ class AirtimeInstall
 
     public static function removeVirtualEnvDistributeFile(){
         echo "* Removing distribute-0.6.10.tar.gz".PHP_EOL;
-        if(file_exists('/usr/share/python-virtualenv/distribute-0.6.10.tar.gz')){
-            exec("rm -f /usr/share/python-virtualenv/distribute-0.6.10.tar.gz");
+        if(file_exists('/usr/local/share/python-virtualenv/distribute-0.6.10.tar.gz')){
+            exec("rm -f /usr/local/share/python-virtualenv/distribute-0.6.10.tar.gz");
         }
     }
 

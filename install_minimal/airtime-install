@@ -197,7 +197,7 @@ fi
 
 
 #An attempt to force apache to realize that files are updated on upgrade...
-touch /usr/share/airtime/public/index.php
+touch /usr/local/share/airtime/public/index.php
 
 if [ "$python_service" -eq "0" ]; then
     #only run airtime-check-system if all components were installed
