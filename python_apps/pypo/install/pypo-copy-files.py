@@ -22,7 +22,7 @@ def copy_dir(src_dir, dest_dir):
     if (os.path.exists(dest_dir)) and (dest_dir != "/"):
         shutil.rmtree(dest_dir)
     if not (os.path.exists(dest_dir)):
-        #print "Copying directory "+os.path.realpath(src_dir)+" to "+os.path.realpath(dest_dir)
+        print "Copying directory "+os.path.realpath(src_dir)+" to "+os.path.realpath(dest_dir)
         shutil.copytree(src_dir, dest_dir)
 
 def create_dir(path):
@@ -91,7 +91,7 @@ try:
 
     #copy monit files
     shutil.copy('%s/../../monit/monit-airtime-generic.cfg'%current_script_dir, '/usr/local/etc/monit.d/')
-    subprocess.call('sed -i "s/\$admin_pass/%s/g" /usr/local/etc/monit.d/monit-airtime-generic.cfg' % get_rand_string(), shell=True)
+    #subprocess.call('sed -i "s/\$admin_pass/%s/g" /usr/local/etc/monit.d/monit-airtime-generic.cfg' % get_rand_string(), shell=True)
 
     monit_version = get_monit_version()
     if version_compare(monit_version, "5.3.0") >= 0:

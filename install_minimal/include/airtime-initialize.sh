@@ -7,21 +7,23 @@ if [[ $EUID -ne 0 ]]; then
     exit 1
 fi
 
-dist=`lsb_release -is`
-echo "Generating locales"
-for i in `ls /usr/local/share/airtime/locale | grep ".._.."`; do
-    if [ "$dist" = "Debian" ]; then
-        grep -qi "^$i" /etc/locale.gen
-        if [ $? -ne 0 ]; then
-            echo "$i.UTF-8 UTF-8" >> /etc/locale.gen
-        fi
-    else
-        locale-gen "$i.utf8"
-    fi
-done
-
-if [ "$dist" = "Debian" ]; then
-    /usr/sbin/locale-gen
+if which lsb_release
+then
+   dist=`lsb_release -is`
+   echo "Generating locales"
+   for i in `ls /usr/local/share/airtime/locale | grep ".._.."`; do
+       if [ "$dist" = "Debian" ]; then
+           grep -qi "^$i" /etc/locale.gen
+           if [ $? -ne 0 ]; then
+               echo "$i.UTF-8 UTF-8" >> /etc/locale.gen
+           fi
+       else
+           locale-gen "$i.utf8"
+       fi
+   done
+   if [ "$dist" == "Debian" ]; then
+       /usr/sbin/locale-gen
+   fi
 fi
 
 # Absolute path to this script, e.g. /home/user/bin/foo.sh
@@ -38,11 +40,11 @@ if [ "$pypo" = "t" ]; then
     python $AIRTIMEROOT/python_apps/pypo/install/pypo-initialize.py
 fi
 
-chmod 600 /usr/local/etc/monit/conf.d/monit-airtime-generic.cfg
-chmod 600 /usr/local/etc/monit/conf.d/monit-airtime-liquidsoap.cfg
-chmod 600 /usr/local/etc/monit/conf.d/monit-airtime-media-monitor.cfg
-chmod 600 /usr/local/etc/monit/conf.d/monit-airtime-playout.cfg
-chmod 600 /usr/local/etc/monit/conf.d/monit-airtime-liquidsoap.cfg
+chmod 600 /usr/local/etc/monit.d/monit-airtime-generic.cfg
+chmod 600 /usr/local/etc/monit.d/monit-airtime-liquidsoap.cfg
+chmod 600 /usr/local/etc/monit.d/monit-airtime-media-monitor.cfg
+chmod 600 /usr/local/etc/monit.d/monit-airtime-playout.cfg
+chmod 600 /usr/local/etc/monit.d/monit-airtime-liquidsoap.cfg
 
 # Start monit if it is not running, or restart if it is.
 # Need to ensure monit is running before Airtime daemons are run. This is
@@ -55,9 +57,12 @@ chmod 600 /usr/local/etc/monit/conf.d/monit-airtime-liquidsoap.cfg
 sleep 1
 
 if [ "$mediamonitor" = "t" ]; then
+    echo monit monitor airtime-media-monitor
     monit monitor airtime-media-monitor
 fi
 if [ "$pypo" = "t" ]; then
+    echo monit monitor airtime-playout
     monit monitor airtime-playout
-    monit monitor airtime-liquidsoap
+    echo monit monitor airtime-liquidsoap
+    monit monitor airtime_liquidsoap
 fi

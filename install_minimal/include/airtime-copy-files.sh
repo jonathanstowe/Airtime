@@ -1,4 +1,4 @@
-#!/usr/bin/env bash -e
+#!/usr/bin/env bash
 #-e Causes bash script to exit if any of the installers
 #return with a non-zero return value.
 
