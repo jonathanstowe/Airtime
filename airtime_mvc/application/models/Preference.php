@@ -112,18 +112,19 @@ class Application_Model_Preference
         catch (Exception $e) {
             $con->rollback();
             header('HTTP/1.0 503 Service Unavailable');
-            Logging::info("Database error: ".$e->getMessage());
+            Logging::debug("Database error: ".$e->getMessage());
             exit;
         }
 
         $cache->store($key, $value, $isUserValue, $userId);
-        //Logging::info("SAVING {$key} {$userId} into cache. = {$value}");
+        Logging::debug("SAVING {$key} {$userId} into cache. = {$value}");
     }
 
     private static function getValue($key, $isUserValue = false)
     {
     	$cache = new Cache();
     	
+       Logging::debug("getValue({$key}, {$isUserValue})");
         try {
         	
         	$userId = self::getUserId();
@@ -133,8 +134,8 @@ class Application_Model_Preference
         	}
         	 
         	$res = $cache->fetch($key, $isUserValue, $userId);
-        	if ($res !== false) {
-        		//Logging::info("returning {$key} {$userId} from cache. = {$res}");
+        	if ($res) {
+        		Logging::debug("returning {$key} {$userId} from cache. = {$res}");
         		return $res;
         	}
            
@@ -146,12 +147,14 @@ class Application_Model_Preference
             $paramMap[':key'] = $key;
             
             //For user specific preference, check if id matches as well
-            if (isset($userId)) {
+
+            if ($isUserValue) {
                
                 $sql .= " AND subjid = :id";
                 $paramMap[':id'] = $userId;
             }
             
+             Logging::debug("executing {$sql}");
             $result = Application_Common_Database::prepareAndExecute($sql, $paramMap, Application_Common_Database::COLUMN);
             
             //return an empty string if the result doesn't exist.
@@ -166,11 +169,12 @@ class Application_Model_Preference
                 $paramMap[':key'] = $key;
 
                 //For user specific preference, check if id matches as well
-                if (isset($userId)) {
+                if ($isUserValue) {
                     $sql .= " AND subjid = :id";
                     $paramMap[':id'] = $userId;
                 }
                 
+        	Logging::debug("executing {$sql}");
                 $result = Application_Common_Database::prepareAndExecute($sql, $paramMap, Application_Common_Database::COLUMN);
 
                 $res = ($result !== false) ? $result : "";
@@ -178,10 +182,11 @@ class Application_Model_Preference
             
             $cache->store($key, $res, $isUserValue, $userId);
             return $res;
+            Logging::debug("returning  {$res} for {$key}");
         } 
         catch (Exception $e) {
             header('HTTP/1.0 503 Service Unavailable');
-            Logging::info("Could not connect to database: ".$e->getMessage());
+            Logging::debug("Could not connect to database: ".$e->getMessage());
             exit;
         }
     }
