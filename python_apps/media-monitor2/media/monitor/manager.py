@@ -226,7 +226,18 @@ class Manager(Loggable):
         """ block until we receive pyinotify events """
         notifier = pyinotify.Notifier(self.wm)
         notifier.coalesce_events()
-        notifier.loop()
+        # FreeBSD appears to emit a 0x000006 which the library doesn't understand
+        # so trap that error and restart the loop
+        continue_running = True
+        while continue_running:
+	   try:
+              notifier.loop()
+           except ProcessEventError as e:
+              self.logger.error("Got error processing event %s" % e.args );
+              self.logger.info("Restarting notifier loop");
+           else:
+              continue_running = False
+
         #notifier = pyinotify.ThreadedNotifier(self.wm, read_freq=1)
         #notifier.coalesce_events()
         #notifier.start()
