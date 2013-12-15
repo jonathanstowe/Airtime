@@ -132,6 +132,7 @@ class ApiRequest(object):
         final_url = self.url.params(**kwargs).url()
         if _post_data is not None: _post_data = urllib.urlencode(_post_data)
         self.logger.debug(final_url)
+        self.logger.debug(_post_data)
         try:
             req = urllib2.Request(final_url, _post_data)
             f = urllib2.urlopen(req)
@@ -357,6 +358,7 @@ class AirtimeApiClient(object):
         # controller not to actually do any changes
         if dry: md_list['dry'] = 1
         self.logger.info("Pumping out %d requests..." % len(valid_actions))
+        self.logger.info(json.dumps(md_list))
         return self.services.reload_metadata_group(_post_data=md_list)
 
     #returns a list of all db files for a given directory in JSON format:

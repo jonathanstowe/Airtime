@@ -2,6 +2,7 @@ import pyinotify
 import time
 import os
 from pydispatch import dispatcher
+from pyinotify import ProcessEventError
 
 from os.path                 import normpath
 from media.monitor.events    import PathChannel

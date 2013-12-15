@@ -7,7 +7,7 @@ import media.monitor.pure as mmp
 from media.monitor.pure import IncludeOnly
 from media.monitor.events import OrganizeFile, NewFile, MoveFile, DeleteFile, \
                                  DeleteDir, MoveDir,\
-                                 DeleteDirWatch
+                                 DeleteDirWatch, ModifyFile
 from media.monitor.log import Loggable
 from media.saas.thread import getsig, user
 # Note: Because of the way classes that inherit from pyinotify.ProcessEvent
@@ -44,11 +44,11 @@ class BaseListener(object):
 
 class OrganizeListener(BaseListener, pyinotify.ProcessEvent, Loggable):
     def process_IN_CLOSE_WRITE(self, event):
-        #self.logger.info("===> handling: '%s'" % str(event))
+        self.logger.debug("===> handling: '%s'" % str(event))
         self.process_to_organize(event)
 
     def process_IN_MOVED_TO(self, event):
-        #self.logger.info("===> handling: '%s'" % str(event))
+        self.logger.debug("===> handling: '%s'" % str(event))
         self.process_to_organize(event)
 
     def flush_events(self, path):
@@ -72,9 +72,17 @@ class OrganizeListener(BaseListener, pyinotify.ProcessEvent, Loggable):
                 event=OrganizeFile(event))
 
 class StoreWatchListener(BaseListener, Loggable, pyinotify.ProcessEvent):
+    def process_IN_MODIFY(self, event):
+        self.logger.debug("===> handling: '%s'" % str(event))
+        self.process_modify(event)
+    def process_IN_CREATE(self, event):
+        self.logger.debug("===> handling: '%s'" % str(event))
+        self.process_create(event)
     def process_IN_CLOSE_WRITE(self, event):
+        self.logger.debug("===> handling: '%s'" % str(event))
         self.process_create(event)
     def process_IN_MOVED_TO(self, event):
+        self.logger.debug("===> handling: '%s'" % str(event))
         if user().event_registry.registered(event):
             # We need this trick because we don't how to "expand" dir events
             # into file events until we know for sure if we deleted or moved
@@ -83,13 +91,17 @@ class StoreWatchListener(BaseListener, Loggable, pyinotify.ProcessEvent):
         else: self.process_create(event)
     def process_IN_MOVED_FROM(self, event):
         # Is either delete dir or delete file
+        self.logger.info('Got IN_MOVED_FROM for "%s" ' % event.path)
         evt = self.process_delete(event)
         # evt can be none whenever event points that a file that would be
         # ignored by @IncludeOnly
         if hasattr(event,'cookie') and (evt != None):
             user().event_registry.register(evt)
-    def process_IN_DELETE(self,event): self.process_delete(event)
+    def process_IN_DELETE(self,event): 
+        self.logger.info('Got IN_DELETE for "%s" ' % event.path)
+        self.process_delete(event)
     def process_IN_MOVE_SELF(self, event):
+        self.logger.debug("===> handling: '%s'" % str(event))
         if '-unknown-path' in event.pathname:
             event.pathname = event.pathname.replace('-unknown-path','')
             self.delete_watch_dir(event)
@@ -103,6 +115,11 @@ class StoreWatchListener(BaseListener, Loggable, pyinotify.ProcessEvent):
     @IncludeOnly(mmp.supported_extensions)
     def process_create(self, event):
         evt = NewFile(event)
+        dispatcher.send(signal=getsig(self.signal), sender=self, event=evt)
+        return evt
+
+    def process_modify(self, event):
+        evt = ModifyFile(event)
         dispatcher.send(signal=getsig(self.signal), sender=self, event=evt)
         return evt
 
