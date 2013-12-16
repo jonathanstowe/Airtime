@@ -20,6 +20,12 @@ command=/usr/local/lib/airtime/pypo/bin/airtime-playout
 
 load_rc_config $name
 
+
+LANG=en_GB.UTF-8
+export LANG
+LC_ALL=en_GB.UTF-8
+export LC_ALL
+
 : ${airtime_playout_enable:="NO"}
 : ${airtime_playout_pidfile:="/var/run/airtime-playout.pid"}
 : ${airtime_playout_user:="root"}
@@ -27,5 +33,28 @@ load_rc_config $name
 
 #required_files="${airtime_playout_config}"
 #command_args="-q -d ${playout_config}"
+
+
+start_cmd=airtime_playout_start
+stop_cmd=airtime_playout_stop
+
+airtime_playout_start () {
+        if ! checkyesno airtime_playout_enable ; then
+           return 0
+        fi
+        echo "Starting $command"
+
+        daemon -p $airtime_playout_pidfile  $command
+}
+
+airtime_playout_stop () {
+        # Send TERM after 5 seconds, wait at most 30 seconds.
+        if [ -f $airtime_playout_pidfile ]
+        then
+        	kill -TERM `cat $airtime_playout_pidfile`
+        	rm -f $airtime_playout_pidfile
+	fi
+
+}
 
 run_rc_command "$1"
