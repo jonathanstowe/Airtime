@@ -42,7 +42,8 @@ class SilanAnalyzer(Thread):
                 # silence detect(set default queue in and out)
                 try:
                     data = {}
-                    command = ['nice', '-n', '19', 'silan', '-b', '-f', 'JSON', full_path]
+                    # These parameters work best for us but it would be better if it was configurable
+                    command = ['nice', '-n', '19', 'silan', '-b', '-t', '3' , '-s', '0.00001', '-f', 'JSON', full_path]
                     try:
                         proc = subprocess.Popen(command, stdout=subprocess.PIPE)
                         comm = proc.communicate()
