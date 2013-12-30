@@ -13,7 +13,10 @@ Airtime::Schema::Result::CcStreamSetting
 use strict;
 use warnings;
 
-use base 'DBIx::Class::Core';
+use Moose;
+use MooseX::NonMoose;
+use MooseX::MarkAsMethods autoclean => 1;
+extends 'DBIx::Class::Core';
 
 =head1 COMPONENTS LOADED
 
@@ -77,9 +80,10 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key("keyname");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07038 @ 2013-12-30 10:29:15
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:2yY5yP3cbrfnkNKwDI65Qg
+# Created by DBIx::Class::Schema::Loader v0.07038 @ 2013-12-30 17:33:31
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:a5AFtqFNOKWZ813IR+Q7xw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
+__PACKAGE__->meta->make_immutable;
 1;

@@ -13,7 +13,10 @@ Airtime::Schema::Result::CcFile
 use strict;
 use warnings;
 
-use base 'DBIx::Class::Core';
+use Moose;
+use MooseX::NonMoose;
+use MooseX::MarkAsMethods autoclean => 1;
+extends 'DBIx::Class::Core';
 
 =head1 COMPONENTS LOADED
 
@@ -751,9 +754,10 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07038 @ 2013-12-30 10:29:14
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Lq9/Lh2Uu53yvEdq46cClQ
+# Created by DBIx::Class::Schema::Loader v0.07038 @ 2013-12-30 17:33:31
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:+DXf8d2BGB6/Ra04+TuulQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
+__PACKAGE__->meta->make_immutable;
 1;
