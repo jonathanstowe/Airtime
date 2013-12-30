@@ -81,6 +81,8 @@ class ShowRecorder(Thread):
         joined_path = os.path.join(config["base_recorded_files"], filename)
         filepath = "%s.%s" % (joined_path, filetype)
 
+        # Need to retrieve this from config
+        ur = "http://airtime.thisisnotpopradio.co.uk:8000/mp3"
         br = config["record_bitrate"]
         sr = config["record_samplerate"]
         c  = config["record_channels"]
@@ -88,14 +90,15 @@ class ShowRecorder(Thread):
 
         #-f:16,2,44100
         #-b:256
-        command = "ecasound -f:%s,%s,%s -i alsa -o %s,%s000 -t:%s" % \
-                                (ss, c, sr, filepath, br, length)
+        command = "mpg123 -q -s %s | ecasound -f:%s,%s,%s -i:stdin -q  -o %s,%s000 -t:%s" % \
+                                (ur, ss, c, sr, filepath, br, length)
         args = command.split(" ")
 
         self.logger.info("starting record")
         self.logger.info("command " + command)
  
-        self.p = Popen(args,stdout=PIPE)
+        # want t use a pipe so need to use a shell
+        self.p = Popen(command,stdout=PIPE,shell=True)
 
         #blocks at the following line until the child process
         #quits
