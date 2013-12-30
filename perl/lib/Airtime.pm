@@ -4,9 +4,11 @@ use 5.006;
 use strict;
 use warnings FATAL => 'all';
 
+use Moose;
+
 =head1 NAME
 
-Airtime - The great new Airtime!
+Airtime - Core Airtime functionality in Perl
 
 =head1 VERSION
 
@@ -19,35 +21,21 @@ our $VERSION = '0.01';
 
 =head1 SYNOPSIS
 
-Quick summary of what the module does.
-
-Perhaps a little code snippet.
 
     use Airtime;
 
     my $foo = Airtime->new();
     ...
 
-=head1 EXPORT
 
-A list of functions that can be exported.  You can delete this section
-if you don't export anything, such as for a purely object-oriented module.
+=head1 DESCRIPTION
 
-=head1 SUBROUTINES/METHODS
 
-=head2 function1
+=head2 METHODS
 
-=cut
+=over 4
 
-sub function1 {
-}
-
-=head2 function2
-
-=cut
-
-sub function2 {
-}
+=back
 
 =head1 AUTHOR
 
@@ -55,9 +43,11 @@ Jonathan Stowe, C<< <jns at gellyfish.co.uk> >>
 
 =head1 BUGS
 
-Please report any bugs or feature requests to C<bug-airtime at rt.cpan.org>, or through
-the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Airtime>.  I will be notified, and then you'll
-automatically be notified of progress on your bug as I make changes.
+Please report any bugs or feature requests to C<bug-airtime at
+rt.cpan.org>, or through the web interface at
+L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Airtime>.  I will
+be notified, and then you'll automatically be notified of progress
+on your bug as I make changes.
 
 
 
