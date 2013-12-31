@@ -6,6 +6,9 @@ use warnings FATAL => 'all';
 
 use Moose;
 
+use Airtime::Schema;
+use Airtime::Config;
+
 =head1 NAME
 
 Airtime - Core Airtime functionality in Perl
