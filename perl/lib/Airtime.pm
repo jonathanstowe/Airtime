@@ -38,6 +38,46 @@ our $VERSION = '0.01';
 
 =over 4
 
+=item config
+
+This returns an L<Airtime::Config> object.
+
+=cut
+
+has config  => (
+                  is => 'ro',
+                  isa   => 'Airtime::Config',
+                  lazy  => 1,
+                  default => sub { return Airtime::Config->new() },
+                  handles  => [qw(db_dsn dbuser dbpass)],
+               );
+
+
+=item database
+
+Returns the connected DBIx::Class::Schema object
+
+=cut
+
+has database   => (
+                     is => 'ro',
+                     isa   => 'Airtime::Schema',
+                     lazy  => 1,
+                     builder  => '_get_database',
+                     handles  => [qw(resultset)],
+                  );
+
+sub _get_database
+{
+   my ( $self ) = @_;
+
+   my $db = Airtime::Schema->connect($self->db_dsn(), 
+                                     $self->dbuser(),
+                                     $self->dbpass());
+
+   return $db;
+}
+
 =back
 
 =head1 AUTHOR
