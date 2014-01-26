@@ -148,7 +148,7 @@ class ShowRecorder(Thread):
             # No idea why we translated - to : before
             #full_time = full_time.replace(":","-")
             self.logger.info("time: %s" % full_time)
-            artist = "Airtime Show Recorder"
+            artist = "FutureMusic FM"
             #set some metadata for our file daemon
             recorded_file           = mutagen.File(filepath, easy = True)
             recorded_file['artist'] = artist
