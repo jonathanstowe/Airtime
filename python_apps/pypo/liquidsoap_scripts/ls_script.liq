@@ -1,8 +1,10 @@
 %include "/usr/local/etc/airtime/liquidsoap.cfg"
 
 set("log.file.path", log_file)
-set("server.telnet", true)
-set("server.telnet.port", 1234)
+set("server.telnet", false)
+set("server.socket", true);
+set("server.socket.path","/var/run/airtime-liquidsoap.sock");
+
 set("init.daemon.pidfile.path", "/var/run/airtime-liquidsoap.pid")
 
 %include "library/pervasives.liq"
