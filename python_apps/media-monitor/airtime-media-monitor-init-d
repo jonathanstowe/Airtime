@@ -10,6 +10,12 @@ rcvar=airtime_media_monitor_enable
 command=/usr/local/lib/airtime/media-monitor/airtime-media-monitor
 pidfile=/var/run/airtime_media_monitor.pid
 
+
+LANG=en_GB.UTF-8
+export LANG
+LC_ALL=en_GB.UTF-8
+export LC_ALL
+
 start_cmd=airtime_media_monitor_start
 stop_cmd=airtime_media_monitor_stop
 
