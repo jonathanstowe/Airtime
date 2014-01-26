@@ -67,7 +67,7 @@ class Application_Model_Preference
             elseif ($result == 1) {
             	
                 // result found
-                if (is_null($userId)) {
+                if (!$isUserValue) {
                     // system pref
                     $sql = "UPDATE cc_pref"
                     ." SET subjid = NULL, valstr = :value"
@@ -85,7 +85,7 @@ class Application_Model_Preference
             else {
             	
                 // result not found
-                if (is_null($userId)) {
+                if (!$isUserValue) {
                     // system pref
                     $sql = "INSERT INTO cc_pref (keystr, valstr)"
                     ." VALUES (:key, :value)";
@@ -132,7 +132,7 @@ class Application_Model_Preference
         	if ($isUserValue && is_null($userId)) {
         		throw new Exception("User id can't be null for a user preference.");
         	}
-        	 
+
         	$res = $cache->fetch($key, $isUserValue, $userId);
         	if ($res) {
         		Logging::debug("returning {$key} {$userId} from cache. = {$res}");
@@ -147,9 +147,7 @@ class Application_Model_Preference
             $paramMap[':key'] = $key;
             
             //For user specific preference, check if id matches as well
-
             if ($isUserValue) {
-               
                 $sql .= " AND subjid = :id";
                 $paramMap[':id'] = $userId;
             }
@@ -544,8 +542,6 @@ class Application_Model_Preference
     public static function SetDefaultTimezone($timezone)
     {
         self::setValue("timezone", $timezone);
-        //TODO check this if setting value failes.
-        date_default_timezone_set($timezone);
     }
 
     // Returns station default timezone (from preferences)
