@@ -1365,6 +1365,8 @@ SELECT si.starts AS start_timestamp,
        si.id AS instance_id,
        si.record,
        s.url,
+       s.description,
+       s.genre,
        starts,
        ends
 FROM cc_show_instances si
