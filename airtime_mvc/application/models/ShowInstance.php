@@ -1,6 +1,11 @@
 <?php
 
-require_once 'formatters/LengthFormatter.php';
+use Airtime\CcShowInstancesQuery;
+use Airtime\CcShowQuery;
+use Airtime\CcShowInstancesPeer;
+use Airtime\CcScheduleQuery;
+use Airtime\CcShowDaysQuery;
+use Airtime\CcShowDays;
 
 class Application_Model_ShowInstance
 {

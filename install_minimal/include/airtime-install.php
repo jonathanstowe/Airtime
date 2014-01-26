@@ -14,15 +14,9 @@ require_once(__DIR__.'/airtime-constants.php');
 
 $iniExists = file_exists("/usr/local/etc/airtime/airtime.conf");
 
-//Enforce a minimum PHP version
-if (!AirtimeInstall::checkPHPVersion())
+if (PHP_VERSION_ID < 50300) //PHP 5.3
 {
-    exit(1);
-}
-
-if (PHP_VERSION_ID < 50400) //PHP 5.4
-{
-    echo("ERROR: Your PHP version is too old!\nAirtime requires PHP 5.4 or greater.\n");
+    echo("ERROR: Your PHP version is too old!\nAirtime requires PHP 5.3 or greater.\n");
     exit(1);
 }
 

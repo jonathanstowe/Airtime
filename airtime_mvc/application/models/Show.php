@@ -1,5 +1,11 @@
 <?php
 
+use Airtime\CcShowQuery;
+use Airtime\CcShowInstancesPeer;
+use Airtime\CcShowInstancesQuery;
+use Airtime\CcSchedulePeer;
+use Airtime\CcShowDaysQuery;
+
 class Application_Model_Show
 {
     private $_showId;
@@ -865,16 +871,14 @@ SELECT si1.starts            AS starts,
        show.color            AS color,
        show.background_color AS background_color,
        show.linked           AS linked,
-       si1.file_id           AS file_id,
+       si1.media_id          AS media_id,
        si1.id                AS instance_id,
        si1.created           AS created,
        si1.last_scheduled    AS last_scheduled,
-       si1.time_filled       AS time_filled,
-       f.soundcloud_id
+       si1.time_filled       AS time_filled
 FROM cc_show_instances      AS si1
 LEFT JOIN cc_show_instances AS si2  ON si1.instance_id = si2.id
 LEFT JOIN cc_show           AS show ON show.id         = si1.show_id
-LEFT JOIN cc_files          AS f    ON f.id            = si1.file_id
 WHERE si1.modified_instance = FALSE
 SQL;
         //only want shows that are starting at the time or later.
@@ -918,41 +922,6 @@ SQL;
 
         $repeatInfo->setDbNextPopDate($nextInfo[0])
             ->save();
-    }
-
-    /**
-     * Generate all the repeating shows in the given range.
-     *
-     * @param DateTime $p_startTimestamp
-     *         In UTC format.
-     * @param DateTime $p_endTimestamp
-     *         In UTC format.
-     */
-    public static function populateAllShowsInRange($p_startTimestamp, $p_endTimestamp)
-    {
-        $con = Propel::getConnection();
-
-        $endTimeString = $p_endTimestamp->format("Y-m-d H:i:s");
-        if (!is_null($p_startTimestamp)) {
-            $startTimeString = $p_startTimestamp->format("Y-m-d H:i:s");
-        } else {
-            $today_timestamp = new DateTime("now", new DateTimeZone("UTC"));
-            $startTimeString = $today_timestamp->format("Y-m-d H:i:s");
-        }
-
-        $stmt = $con->prepare("
-            SELECT * FROM cc_show_days
-            WHERE last_show IS NULL
-            OR first_show < :endTimeString AND last_show > :startTimeString");
-
-        $stmt->bindParam(':endTimeString', $endTimeString);
-        $stmt->bindParam(':startTimeString', $startTimeString);
-        $stmt->execute();
-
-        $res = $stmt->fetchAll();
-        foreach ($res as $row) {
-            Application_Model_Show::populateShow($row, $p_endTimestamp);
-        }
     }
 
     /**
@@ -1028,8 +997,8 @@ SQL;
             $event["linked"]        = intval($show["linked"]);
             $event["record"]        = intval($show["record"]);
             $event["rebroadcast"]   = intval($show["rebroadcast"]);
-            $event["soundcloud_id"] = is_null($show["soundcloud_id"])
-                ? -1 : $show["soundcloud_id"];
+            //$event["soundcloud_id"] = is_null($show["soundcloud_id"])
+             //   ? -1 : $show["soundcloud_id"];
             
             //for putting the now playing icon on the show.
             if ($now > $startsDT && $now < $endsDT) {

@@ -1,6 +1,17 @@
 <?php
 
-require_once 'formatters/LengthFormatter.php';
+use Airtime\CcPlaylist;
+use Airtime\CcPlaylistPeer;
+use Airtime\CcPlaylistQuery;
+use Airtime\CcPlaylistcontents;
+use Airtime\CcPlaylistcontentsQuery;
+use Airtime\CcFilesQuery;
+use Airtime\CcWebstreamQuery;
+use Airtime\CcBlockQuery;
+use Airtime\CcFiles;
+use Airtime\CcFilesPeer;
+use Airtime\CcWebstream;
+use Airtime\CcBlock;
 
 /**
  *
@@ -8,7 +19,7 @@ require_once 'formatters/LengthFormatter.php';
  * @copyright 2010 Sourcefabric O.P.S.
  * @license http://www.gnu.org/licenses/gpl.txt
  */
-class Application_Model_Playlist implements Application_Model_LibraryEditable
+class Application_Model_Playlist
 {
 	const CUE_ALL_ERROR = 0;
 	const CUE_IN_ERROR = 1;
