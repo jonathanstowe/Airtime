@@ -1,4 +1,4 @@
-#!/usr/bin/env bash -e
+#!/usr/bin/env bash
 #-e Causes bash script to exit if any of the installers
 #return with a non-zero return value.
 
@@ -94,6 +94,7 @@ set +e
 php --php-ini ${SCRIPTPATH}/airtime-php.ini ${SCRIPTPATH}/include/airtime-installed-check.php
 result=$?
 set -e
+
 
 DO_UPGRADE="0"
 if [ "$result" -eq "0" ]; then

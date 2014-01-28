@@ -11,18 +11,21 @@ def create_user(username):
   if (output[0:3] != "uid"):
     # Make the pypo user
     print " * Creating user "+username
-    os.system("adduser --system --quiet --group "+username)
+    os.system("pw useradd "+username)
   else:
     print "User already exists."
-  #add pypo to audio group
-  os.system("adduser " + username + " audio 1>/dev/null 2>&1")
-  #add pypo to www group
-  os.system("adduser " + username + " www 1>/dev/null 2>&1")
-  #add pypo to pulse group
-  os.system("adduser " + username + " pulse 1>/dev/null 2>&1")
-  #add pypo to pulse-access group
-  os.system("adduser " + username + " pulse-access 1>/dev/null 2>&1")
+  
+  primary_group="pypo"
+  supplementary_groups=['audio', 'www', 'pulse']
 
+  os.system("pw groupadd " + primary_group + " 1>/dev/null 2>&1")
+
+  for group in supplementary_groups:
+     os.system("pw groupadd " + group + " 1>/dev/null 2>&1")
+
+  group_list = ",".join(supplementary_groups)
+
+  os.system("pw usermod " + username + " -g " + primary_group + " -G " + group_list + " 1>/dev/null 2>&1")
 
 if __name__ == "__main__":
     if os.geteuid() != 0:

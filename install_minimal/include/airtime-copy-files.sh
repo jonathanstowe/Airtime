@@ -60,9 +60,11 @@ HOUR=$(($RANDOM%24))
 MIN=$(($RANDOM%60))
 #echo "$MIN $HOUR * * * root /usr/local/lib/airtime/utils/phone_home_stat" > /usr/local/etc/cron.d/airtime-crons
 
+pip install configobj
+
 echo "* Creating /usr/local/lib/airtime"
 if [ "$python_service" = "0" ]; then
-    echo "doing stuff"
+    echo "doing stuff with " . `which python`
     python $AIRTIMEROOT/python_apps/api_clients/install/api_client_install.py
     
     if [ "$mediamonitor" = "t" ]; then

@@ -42,4 +42,12 @@ else
 fi
 
 echo -e "\n*** Installing Python Libraries ***"
-/usr/local/lib/airtime/airtime_virtualenv/bin/pip install ${SCRIPTPATH}/airtime_virtual_env.pybundle || exit 1
+/usr/local/lib/airtime/airtime_virtualenv/bin/pip install ${SCRIPTPATH}/airtime_virtual_env.pybundle || true
+/usr/local/lib/airtime/airtime_virtualenv/bin/pip install kombu
+/usr/local/lib/airtime/airtime_virtualenv/bin/pip install mutagen
+/usr/local/lib/airtime/airtime_virtualenv/bin/pip install pydispatcher
+/usr/local/lib/airtime/airtime_virtualenv/bin/pip install pytz
+/usr/local/lib/airtime/airtime_virtualenv/bin/pip install poster
+cd ${SCRIPTPATH}/3rd_party/pyinotify
+/usr/local/lib/airtime/airtime_virtualenv/bin/python setup.py install
+cd ${SCRIPTPATH}
