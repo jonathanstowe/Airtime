@@ -20,7 +20,7 @@ defined('APPLICATION_PATH')
 
 // Define application environment
 defined('APPLICATION_ENV')
-    || define('APPLICATION_ENV', (getenv('APPLICATION_ENV') ? getenv('APPLICATION_ENV') : 'production'));
+    || define('APPLICATION_ENV', (getenv('APPLICATION_ENV') ? getenv('APPLICATION_ENV') : 'development'));
 
 defined('VERBOSE_STACK_TRACE')
     || define('VERBOSE_STACK_TRACE', (getenv('VERBOSE_STACK_TRACE') ? getenv('VERBOSE_STACK_TRACE') : true));
@@ -32,6 +32,8 @@ set_include_path(implode(PATH_SEPARATOR, array(
 )));
 
 set_include_path(APPLICATION_PATH . '/common' . PATH_SEPARATOR . get_include_path());
+
+set_include_path(APPLICATION_PATH . '/presentation' . PATH_SEPARATOR . get_include_path());
 
 //Propel classes.
 set_include_path(APPLICATION_PATH . '/models' . PATH_SEPARATOR . get_include_path());
