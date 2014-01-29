@@ -147,7 +147,7 @@ class Application_Model_Preference
             $paramMap[':key'] = $key;
             
             //For user specific preference, check if id matches as well
-            if ($isUserValue) {
+            if ($isUserValue) {                         
                 $sql .= " AND subjid = :id";
                 $paramMap[':id'] = $userId;
             }
