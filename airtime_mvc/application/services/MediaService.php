@@ -551,8 +551,9 @@ class Application_Service_MediaService
 		$len = intval($params["iSortingCols"]);
 		for ($i = 0; $i < $len; $i++) {
 			
-			if ($params["bSortable_{$i}"] === "true") {
-				$colNum = $params["iSortCol_{$i}"];
+			$colNum = $params["iSortCol_{$i}"];
+			
+			if ($params["bSortable_{$colNum}"] == "true") {
 				$colName = $params["mDataProp_{$colNum}"];
 				$colDir = $params["sSortDir_{$i}"] === "asc" ? Criteria::ASC : Criteria::DESC;
 					
@@ -704,6 +705,23 @@ class Application_Service_MediaService
 				$obj_sess->id = null;
 			}
 		}
+	}
+	
+	public function createLibraryColumnsJavascript() {
+		
+		//set audio columns for display of data.
+		$columns = json_encode(self::makeDatatablesColumns('AudioFile'));
+		$script = "localStorage.setItem( 'datatables-audiofile-aoColumns', JSON.stringify($columns) ); ";
+		
+		//set webstream columns for display of data.
+		$columns = json_encode(self::makeDatatablesColumns('Webstream'));
+		$script .= "localStorage.setItem( 'datatables-webstream-aoColumns', JSON.stringify($columns) ); ";
+		
+		//set playlist columns for display of data.
+		$columns = json_encode(self::makeDatatablesColumns('Playlist'));
+		$script .= "localStorage.setItem( 'datatables-playlist-aoColumns', JSON.stringify($columns) ); ";
+		
+		return $script;
 	}
 	
 	/*
