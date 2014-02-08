@@ -44,39 +44,55 @@ class Application_Service_MediaService
 		
 		return array(
 			"Id" => array(
-				"isColumn" => false
+				"isColumn" => false,
+				"advancedSearch" => array(
+					"type" => null		
+				)
 			),
 			"IsScheduled" => array(
 				"isColumn" => true,
 				"title" => _("Scheduled"),
 				"width" => "90px",
 				"class" => "library_is_scheduled",
-				"searchable" => false,
+				"advancedSearch" => array(
+					"type" => "checkbox"		
+				)
 			),
 			"IsPlaylist" => array(
 				"isColumn" => true,
 				"title" => _("Playlist"),
 				"width" => "90px",
 				"class" => "library_is_playlist",
-				"searchable" => false,
+				"advancedSearch" => array(
+					"type" => "checkbox"		
+				)
 			),
 			"TrackTitle" => array(
 				"isColumn" => true,
 				"title" => _("Title"),
 				"width" => "170px",
-				"class" => "library_title"
+				"class" => "library_title",
+				"advancedSearch" => array(
+					"type" => "text"		
+				)
 			),
 			"ArtistName" => array(
 				"isColumn" => true,
 				"title" => _("Creator"),
 				"width" => "160px",
-				"class" => "library_creator"
+				"class" => "library_creator",
+				"advancedSearch" => array(
+					"type" => "text"
+				)
 			),
 			"AlbumTitle" => array(
 				"isColumn" => true,
 				"title" => _("Album"),
 				"width" => "150px",
-				"class" => "library_album"
+				"class" => "library_album",
+				"advancedSearch" => array(
+					"type" => "text"
+				)
 			),
 			"BitRate" => array(
 				"isColumn" => true,
@@ -84,7 +100,9 @@ class Application_Service_MediaService
 				"width" => "80px",
 				"class" => "library_bitrate",
 				"visible" => false,
-				"searchable" => false,
+				"advancedSearch" => array(
+					"type" => "number-range"
+				)
 			),
 			"Bpm" => array(
 				"isColumn" => true,
@@ -92,7 +110,9 @@ class Application_Service_MediaService
 				"width" => "50px",
 				"class" => "library_bpm",
 				"visible" => false,
-				"searchable" => false,
+				"advancedSearch" => array(
+					"type" => "number-range"
+				)
 			),
 			"Composer" => array(
 				"isColumn" => true,
@@ -100,6 +120,9 @@ class Application_Service_MediaService
 				"width" => "150px",
 				"class" => "library_composer",
 				"visible" => false,
+				"advancedSearch" => array(
+					"type" => "text"
+				)
 			),
 			"Conductor" => array(
 				"isColumn" => true,
@@ -107,6 +130,9 @@ class Application_Service_MediaService
 				"width" => "125px",
 				"class" => "library_conductor",
 				"visible" => false,
+				"advancedSearch" => array(
+					"type" => "text"
+				)
 			),
 			"Copyright" => array(
 				"isColumn" => true,
@@ -114,6 +140,9 @@ class Application_Service_MediaService
 				"width" => "125px",
 				"class" => "library_copyright",
 				"visible" => false,
+				"advancedSearch" => array(
+					"type" => "text"
+				)
 			),
 			"Cuein" => array(
 				"isColumn" => true,
@@ -122,6 +151,9 @@ class Application_Service_MediaService
 				"class" => "library_length",
 				"visible" => false,
 				"searchable" => false,
+				"advancedSearch" => array(
+					"type" => null
+				)
 			),
 			"Cueout" => array(
 				"isColumn" => true,
@@ -130,6 +162,9 @@ class Application_Service_MediaService
 				"class" => "library_length",
 				"visible" => false,
 				"searchable" => false,
+				"advancedSearch" => array(
+					"type" => null
+				)
 			),
 			"EncodedBy" => array(
 				"isColumn" => true,
@@ -137,6 +172,9 @@ class Application_Service_MediaService
 				"width" => "150px",
 				"class" => "library_encoded",
 				"visible" => false,
+				"advancedSearch" => array(
+					"type" => "text"
+				)
 			),
 			"Genre" => array(
 				"isColumn" => true,
@@ -144,6 +182,9 @@ class Application_Service_MediaService
 				"width" => "100px",
 				"class" => "library_genre",
 				"visible" => false,
+				"advancedSearch" => array(
+					"type" => "text"
+				)
 			),
 			"IsrcNumber" => array(
 				"isColumn" => true,
@@ -151,6 +192,9 @@ class Application_Service_MediaService
 				"width" => "150px",
 				"class" => "library_isrc",
 				"visible" => false,
+				"advancedSearch" => array(
+					"type" => "text"
+				)
 			),
 			"Label" => array(
 				"isColumn" => true,
@@ -158,6 +202,9 @@ class Application_Service_MediaService
 				"width" => "125px",
 				"class" => "library_label",
 				"visible" => false,
+				"advancedSearch" => array(
+					"type" => "text"
+				)
 			),
 			"Language" => array(
 				"isColumn" => true,
@@ -165,6 +212,9 @@ class Application_Service_MediaService
 				"width" => "125px",
 				"class" => "library_language",
 				"visible" => false,
+				"advancedSearch" => array(
+					"type" => "text"
+				)
 			),
 			"UpdatedAt" => array(
 				"isColumn" => true,
@@ -172,7 +222,9 @@ class Application_Service_MediaService
 				"width" => "125px",
 				"class" => "library_modified_time",
 				"visible" => false,
-				"searchable" => false,
+				"advancedSearch" => array(
+					"type" => "date-range"
+				)
 			),
 			"LastPlayedTime" => array(
 				"isColumn" => true,
@@ -180,7 +232,9 @@ class Application_Service_MediaService
 				"width" => "125px",
 				"class" => "library_modified_time",
 				"visible" => false,
-				"searchable" => false,
+				"advancedSearch" => array(
+					"type" => "date-range"
+				)
 			),
 			"CueLength" => array(
 				"isColumn" => true,
@@ -188,6 +242,9 @@ class Application_Service_MediaService
 				"width" => "80px",
 				"class" => "library_length",
 				"searchable" => false,
+				"advancedSearch" => array(
+					"type" => null
+				)
 			),
 			"Mime" => array(
 				"isColumn" => true,
@@ -195,6 +252,9 @@ class Application_Service_MediaService
 				"width" => "80px",
 				"class" => "library_mime",
 				"visible" => false,
+				"advancedSearch" => array(
+					"type" => "text"
+				)
 			),
 			"Mood" => array(
 				"isColumn" => true,
@@ -202,13 +262,19 @@ class Application_Service_MediaService
 				"width" => "70px",
 				"class" => "library_mood",
 				"visible" => false,
+				"advancedSearch" => array(
+					"type" => "text"
+				)
 			),	
 			"CcSubjs.DbLogin" => array(
 				"isColumn" => true,
 				"title" => _("Owner"),
 				"width" => "125px",
 				"class" => "library_owner",
-				"visible" => false
+				"visible" => false,
+				"advancedSearch" => array(
+					"type" => "text"
+				)
 			),
 			"ReplayGain" => array(
 				"isColumn" => true,
@@ -216,7 +282,9 @@ class Application_Service_MediaService
 				"width" => "80px",
 				"class" => "library_replay_gain",
 				"visible" => false,
-				"searchable" => false,
+				"advancedSearch" => array(
+					"type" => "number-range"
+				)
 			),
 			"SampleRate" => array(
 				"isColumn" => true,
@@ -224,7 +292,9 @@ class Application_Service_MediaService
 				"width" => "80px",
 				"class" => "library_sr",
 				"visible" => false,
-				"searchable" => false,
+				"advancedSearch" => array(
+					"type" => "number-range"
+				)
 			),
 			"TrackNumber" => array(
 				"isColumn" => true,
@@ -232,7 +302,9 @@ class Application_Service_MediaService
 				"width" => "65px",
 				"class" => "library_track",
 				"visible" => false,
-				"searchable" => false,
+				"advancedSearch" => array(
+					"type" => "number-range"
+				)
 			),
 			"CreatedAt" => array(
 				"isColumn" => true,
@@ -240,7 +312,9 @@ class Application_Service_MediaService
 				"width" => "125px",
 				"class" => "library_upload_time",
 				"visible" => false,
-				"searchable" => false,
+				"advancedSearch" => array(
+					"type" => "date-range"
+				)
 			),
 			"InfoUrl" => array(
 				"isColumn" => true,
@@ -248,6 +322,10 @@ class Application_Service_MediaService
 				"width" => "150px",
 				"class" => "library_url",
 				"visible" => false,
+				"advancedSearch" => array(
+					"type" => "text"
+				)
+				
 			),
 			"Year" => array(
 				"isColumn" => true,
@@ -255,6 +333,9 @@ class Application_Service_MediaService
 				"width" => "60px",
 				"class" => "library_year",
 				"visible" => false,
+				"advancedSearch" => array(
+					"type" => "number-range"
+				)
 			),
 		);
 	}
@@ -551,8 +632,9 @@ class Application_Service_MediaService
 		$len = intval($params["iSortingCols"]);
 		for ($i = 0; $i < $len; $i++) {
 			
-			if ($params["bSortable_{$i}"] === "true") {
-				$colNum = $params["iSortCol_{$i}"];
+			$colNum = $params["iSortCol_{$i}"];
+			
+			if ($params["bSortable_{$colNum}"] == "true") {
 				$colName = $params["mDataProp_{$colNum}"];
 				$colDir = $params["sSortDir_{$i}"] === "asc" ? Criteria::ASC : Criteria::DESC;
 					
@@ -674,10 +756,6 @@ class Application_Service_MediaService
 		return self::createOutput($coll, $columns);
 	}
 	
-	public function getMediaViewScript() {
-		
-	}
-	
 	public function setSessionMediaObject($obj) {
 		
 		$obj_sess = new Zend_Session_Namespace(UI_PLAYLISTCONTROLLER_OBJ_SESSNAME);
@@ -706,6 +784,57 @@ class Application_Service_MediaService
 		}
 	}
 	
+	public function createLibraryColumnsJavascript() {
+		
+		//set audio columns for display of data.
+		$columns = json_encode(self::makeDatatablesColumns('AudioFile'));
+		$script = "localStorage.setItem( 'datatables-audio-aoColumns', JSON.stringify($columns) ); ";
+		
+		//set webstream columns for display of data.
+		$columns = json_encode(self::makeDatatablesColumns('Webstream'));
+		$script .= "localStorage.setItem( 'datatables-webstream-aoColumns', JSON.stringify($columns) ); ";
+		
+		//set playlist columns for display of data.
+		$columns = json_encode(self::makeDatatablesColumns('Playlist'));
+		$script .= "localStorage.setItem( 'datatables-playlist-aoColumns', JSON.stringify($columns) ); ";
+		
+		return $script;
+	}
+	
+	public function createLibraryColumnSettingsJavascript() {
+	
+		$script = "";
+		
+		$settings = Application_Model_Preference::getAudioTableSetting();
+        if (!is_null($settings)) {
+            $data = json_encode($settings);
+            $script .= "localStorage.setItem( 'datatables-audio', JSON.stringify($data) ); ";
+        } 
+        else {
+        	$script .= "localStorage.setItem( 'datatables-audio', null ); ";
+        }
+        
+        $settings = Application_Model_Preference::getWebstreamTableSetting();
+        if (!is_null($settings)) {
+        	$data = json_encode($settings);
+        	$script .= "localStorage.setItem( 'datatables-webstream', JSON.stringify($data) ); ";
+        }
+        else {
+        	$script .= "localStorage.setItem( 'datatables-webstream', null ); ";
+        }
+        
+        $settings = Application_Model_Preference::getPlaylistTableSetting();
+        if (!is_null($settings)) {
+        	$data = json_encode($settings);
+        	$script .= "localStorage.setItem( 'datatables-playlist', JSON.stringify($data) ); ";
+        }
+        else {
+        	$script .= "localStorage.setItem( 'datatables-playlist', null ); ";
+        }
+	
+		return $script;
+	}
+	
 	/*
 	 * @param $obj MediaItem object.
 	 * @return $service proper service for this item type.
@@ -718,5 +847,28 @@ class Application_Service_MediaService
 		
 		$serviceClass = "Application_Service_{$type}Service";
 		return new $serviceClass();
+	}
+	
+	public function createContextMenu($mediaId) {
+		
+		$mediaItem = MediaItemQuery::create()->findPK($mediaId);
+		$obj = $mediaItem->getChildObject();
+		
+		$service = self::locateServiceType($mediaItem);
+		
+		return $service->createContextMenu($obj);
+	}
+	
+	public function getJPlayerPreviewPlaylist($mediaId) {
+		
+		$mediaItem = MediaItemQuery::create()->findPK($mediaId);
+		
+		$type = $mediaItem->getType();
+		
+		$class = "Presentation_JPlayerItem{$type}";
+		
+		$jPlayerPlaylist = new $class($mediaItem);
+		
+		return $jPlayerPlaylist;
 	}
 }

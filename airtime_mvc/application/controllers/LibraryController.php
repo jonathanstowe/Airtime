@@ -1,6 +1,7 @@
 <?php
 
 use Airtime\CcWebstreamQuery;
+use Airtime\MediaItem\AudioFileQuery;
 
 class LibraryController extends Zend_Controller_Action
 {
@@ -8,7 +9,7 @@ class LibraryController extends Zend_Controller_Action
     public function init()
     {
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
-        $ajaxContext->addActionContext('contents-feed', 'json')
+        $ajaxContext
                     ->addActionContext('delete', 'json')
                     ->addActionContext('duplicate', 'json')
                     ->addActionContext('delete-group', 'json')
@@ -16,7 +17,6 @@ class LibraryController extends Zend_Controller_Action
                     ->addActionContext('get-file-metadata', 'html')
                     ->addActionContext('upload-file-soundcloud', 'json')
                     ->addActionContext('get-upload-to-soundcloud-status', 'json')
-                    ->addActionContext('set-num-entries', 'json')
                     ->addActionContext('edit-file-md', 'json')
                     ->initContext();
     }
@@ -46,8 +46,8 @@ class LibraryController extends Zend_Controller_Action
         
         $this->view->headLink()->appendStylesheet($baseUrl.'css/media_library.css?'.$CC_CONFIG['airtime_version']);
         $this->view->headLink()->appendStylesheet($baseUrl.'css/jquery.contextMenu.css?'.$CC_CONFIG['airtime_version']);
-        $this->view->headLink()->appendStylesheet($baseUrl.'css/datatables/css/ColVis.css?'.$CC_CONFIG['airtime_version']);
-        $this->view->headLink()->appendStylesheet($baseUrl.'css/datatables/css/ColReorder.css?'.$CC_CONFIG['airtime_version']);
+        $this->view->headLink()->appendStylesheet($baseUrl.'css/datatables/css/dataTables.colVis.css?'.$CC_CONFIG['airtime_version']);
+        $this->view->headLink()->appendStylesheet($baseUrl.'css/datatables/css/dataTables.colReorder.css?'.$CC_CONFIG['airtime_version']);
         $this->view->headLink()->appendStylesheet($baseUrl.'css/waveform.css?'.$CC_CONFIG['airtime_version']);
         $this->view->headLink()->appendStylesheet($baseUrl.'css/playlist_builder.css?'.$CC_CONFIG['airtime_version']);
 
@@ -65,18 +65,8 @@ class LibraryController extends Zend_Controller_Action
             
         //set audio columns for display of data.
         $mediaService = new Application_Service_MediaService();
-        $columns = json_encode($mediaService->makeDatatablesColumns('AudioFile'));
-        $script = "localStorage.setItem( 'datatables-audiofile-aoColumns', JSON.stringify($columns) ); ";
-        
-        //set webstream columns for display of data.
-        $columns = json_encode($mediaService->makeDatatablesColumns('Webstream'));
-        $script .= "localStorage.setItem( 'datatables-webstream-aoColumns', JSON.stringify($columns) ); ";
-        
-        //set playlist columns for display of data.
-        $columns = json_encode($mediaService->makeDatatablesColumns('Playlist'));
-        $script .= "localStorage.setItem( 'datatables-playlist-aoColumns', JSON.stringify($columns) ); ";
-        
-        $this->view->headScript()->appendScript($script);
+        $this->view->headScript()->appendScript($mediaService->createLibraryColumnsJavascript());
+        $this->view->headScript()->appendScript($mediaService->createLibraryColumnSettingsJavascript());
         
         $this->view->obj = $mediaService->getSessionMediaObject();
     }
@@ -86,16 +76,9 @@ class LibraryController extends Zend_Controller_Action
     	$baseUrl = Application_Common_OsPath::getBaseDir();
     	$id = intval($this->_getParam('id'));
     	
-    	$menu = array();
-    	
-    	$menu["pl_add"] = array(
-    		"name" => _("Add to Playlist"), 
-    		"requestUrl" => $baseUrl."playlist/add-items",
-    		"requestType" => "POST",
-    		"requestData" => array("ids" => array($id)),
-    		"callback" => "AIRTIME.playlist.redrawPlaylist"
-    	);
-    	
+    	$mediaService = new Application_Service_MediaService();
+    	$menu = $mediaService->createContextMenu($id);
+    	    	
     	if (empty($menu)) {
     		$menu["noaction"] = array("name"=>_("No action available"));
     	}
@@ -337,40 +320,28 @@ class LibraryController extends Zend_Controller_Action
         $newPl->setName(sprintf(_("Copy of %s"), $originalPl->getName()));
     }
 
-    public function contentsFeedAction()
-    {
-        $params = $this->getRequest()->getParams();
-
-        # terrible name for the method below. it does not only search files.
-        $r = Application_Model_StoredFile::searchLibraryFiles($params);
-
-        $this->view->sEcho = $r["sEcho"];
-        $this->view->iTotalDisplayRecords = $r["iTotalDisplayRecords"];
-        $this->view->iTotalRecords = $r["iTotalRecords"];
-        $this->view->files = $r["aaData"];
-    }
-
     public function editFileMdAction()
     {
         $user = Application_Model_User::getCurrentUser();
         $isAdminOrPM = $user->isUserType(array(UTYPE_ADMIN, UTYPE_PROGRAM_MANAGER));
 
         $request = $this->getRequest();
-
-
-
-
-        $file_id = $this->_getParam('id', null);
-        $file = Application_Model_StoredFile::RecallById($file_id);
-
-        if (!$isAdminOrPM && $file->getFileOwnerId() != $user->getId()) {
+        $id = $this->_getParam('id', null);
+        
+        $audioFile = AudioFileQuery::create()->findPk($id);
+        
+        //TODO check for hidden/exists and set headers.
+        if (empty($audioFile)) {
+        	return;
+        }
+        
+        if (!$isAdminOrPM && $audioFile->getOwnerId() != $user->getId()) {
             return;
         }
-
+        
         $form = new Application_Form_EditAudioMD();
-        $form->startForm($file_id);
-        $form->populate($file->getDbColMetadata());
-
+        $form->populate(array("MDATA_ID" => $id));
+        
         if ($request->isPost()) {
 
             $js = $this->_getParam('data');
@@ -379,29 +350,29 @@ class LibraryController extends Zend_Controller_Action
             foreach ($js as $j) {
                 $serialized[$j["name"]] = $j["value"];
             }
-
+           
             if ($form->isValid($serialized)) {
 
-                $formValues = $this->_getParam('data', null);
-                $formdata = array();
-                foreach ($formValues as $val) {
-                    $formdata[$val["name"]] = $val["value"];
-                }
-                $file->setDbColMetadata($formdata);
-
-                $data = $file->getMetadata();
-
-                // set MDATA_KEY_FILEPATH
-                $data['MDATA_KEY_FILEPATH'] = $file->getFilePath();
-                Logging::info($data['MDATA_KEY_FILEPATH']);
-                Application_Model_RabbitMq::SendMessageToMediaMonitor("md_update", $data);
-
-                $this->_redirect('Library');
+            	$values = $form->getValues();
+                $audioFile->setMetadata($values);
+                
+                //set MDATA_KEY_FILEPATH
+                $values['MDATA_KEY_FILEPATH'] = $audioFile->getFilepath();
+                Application_Model_RabbitMq::SendMessageToMediaMonitor("md_update", $values);
+            }
+            else {
+            	$this->view->errors = $form->getMessages();
+            	$this->view->html = $form->render();
             }
         }
-
-        $this->view->form = $form;
-        $this->view->dialog = $this->view->render('library/edit-file-md.phtml');
+        else {
+        	$md = $audioFile->getMetadata();
+        	$form->populate($md);
+        	
+        	$this->view->form = $form;
+        	$this->view->dialog = $this->view->render('library/edit-file-md.phtml');
+        	unset($this->view->form);
+        }
     }
 
     public function getFileMetadataAction()

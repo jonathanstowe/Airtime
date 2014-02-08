@@ -47,9 +47,9 @@ class ShowbuilderController extends Zend_Controller_Action
 
         $this->view->headLink()->appendStylesheet($baseUrl.'css/media_library.css?'.$CC_CONFIG['airtime_version']);
         $this->view->headLink()->appendStylesheet($baseUrl.'css/jquery.contextMenu.css?'.$CC_CONFIG['airtime_version']);
-        $this->view->headLink()->appendStylesheet($baseUrl.'css/datatables/css/ColVis.css?'.$CC_CONFIG['airtime_version']);
-        $this->view->headLink()->appendStylesheet($baseUrl.'css/datatables/css/ColReorder.css?'.$CC_CONFIG['airtime_version']);
-
+        $this->view->headLink()->appendStylesheet($baseUrl.'css/datatables/css/dataTables.colVis.css?'.$CC_CONFIG['airtime_version']);
+        $this->view->headLink()->appendStylesheet($baseUrl.'css/datatables/css/dataTables.colReorder.css?'.$CC_CONFIG['airtime_version']);
+        
         $refer_sses = new Zend_Session_Namespace('referrer');
 
         if ($request->isPost()) {
@@ -128,16 +128,14 @@ class ShowbuilderController extends Zend_Controller_Action
 
         //only include library things on the page if the user can see it.
         if (!$disableLib) {
+
             $this->view->headScript()->appendFile($baseUrl.'js/airtime/library/events/lib_showbuilder.js?'.$CC_CONFIG['airtime_version'],'text/javascript');
         	$this->view->headScript()->appendFile($baseUrl.'js/airtime/library/lib_separate_table.js?'.$CC_CONFIG['airtime_version'], 'text/javascript');
         	
-            $data = Application_Model_Preference::getCurrentLibraryTableSetting();
-            if (!is_null($data)) {
-                $libraryTable = json_encode($data);
-                $this->view->headScript()->appendScript("localStorage.setItem( 'datatables-library', JSON.stringify($libraryTable) );");
-            } else {
-                $this->view->headScript()->appendScript("localStorage.setItem( 'datatables-library', '' );");
-            }
+        	//set media columns for display of data.
+        	$mediaService = new Application_Service_MediaService();
+        	$this->view->headScript()->appendScript($mediaService->createLibraryColumnsJavascript());
+            $this->view->headScript()->appendScript($mediaService->createLibraryColumnSettingsJavascript());
         }
 
         $data = Application_Model_Preference::getTimelineDatatableSetting();
@@ -145,7 +143,7 @@ class ShowbuilderController extends Zend_Controller_Action
             $timelineTable = json_encode($data);
             $this->view->headScript()->appendScript("localStorage.setItem( 'datatables-timeline', JSON.stringify($timelineTable) );");
         } else {
-            $this->view->headScript()->appendScript("localStorage.setItem( 'datatables-timeline', '' );");
+            $this->view->headScript()->appendScript("localStorage.setItem( 'datatables-timeline', null );");
         }
 
         //populate date range form for show builder.
