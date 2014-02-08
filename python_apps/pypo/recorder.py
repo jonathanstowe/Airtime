@@ -81,8 +81,7 @@ class ShowRecorder(Thread):
         joined_path = os.path.join(config["base_recorded_files"], filename)
         filepath = "%s.%s" % (joined_path, filetype)
 
-        # Need to retrieve this from config
-        ur = "http://airtime.thisisnotpopradio.co.uk:8000/mp3"
+        ur = config["record_stream_url"]
         br = config["record_bitrate"]
         sr = config["record_samplerate"]
         c  = config["record_channels"]
@@ -148,7 +147,7 @@ class ShowRecorder(Thread):
             # No idea why we translated - to : before
             #full_time = full_time.replace(":","-")
             self.logger.info("time: %s" % full_time)
-            artist = "FutureMusic FM"
+            artist = config["recorded_artist"]
             #set some metadata for our file daemon
             recorded_file           = mutagen.File(filepath, easy = True)
             recorded_file['artist'] = artist

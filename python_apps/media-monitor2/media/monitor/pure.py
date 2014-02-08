@@ -276,11 +276,13 @@ def organized_path(old_path, root_path, orig_md):
         r = "(?P<show>.+)-(?P<date>\d+-\d+-\d+)-(?P<time>\d+:\d+:\d+)$"
         title_re    = re.match(r, normal_md['MDATA_KEY_TITLE'])
         show_name   = title_re.group('show')
-        #date        = title_re.group('date')
+		  show_name   = show_name.replace(' ', '_')
+        show_name   = show_name.replace('/', '')
+        date        = title_re.group('date')
+        date_parts  = date.split('-')
+        iso_date    = "%s%s%s" % (date_parts[0], date_parts[1], date_parts[2])
         yyyy, mm, _ = normal_md['MDATA_KEY_YEAR'].split('-',2)
-        fname_base  = '%s-%s-%s.%s' % \
-                (title_re.group('time'), show_name,
-                        normal_md['MDATA_KEY_BITRATE'], ext)
+        fname_base  = '%s-%s.%s' % ( iso_date, show_name, ext )
         filepath = os.path.join(root_path, yyyy, mm, fname_base)
     elif len(normal_md['MDATA_KEY_TRACKNUMBER']) == 0:
         fname = u'%s-%s.%s' % (normal_md['MDATA_KEY_TITLE'],
