@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 ############################################
-# just a wrapper to call the notifyer      #
+# just a wrapper to call the notifier      #
 # needed here to keep dirs/configs clean   #
 # and maybe to set user-rights             #
 ############################################
@@ -11,4 +11,4 @@ SCRIPT=`realpath $0`
 SCRIPTPATH=`dirname $SCRIPT`
 
 cd ${SCRIPTPATH}/../ 
-gtimeout 45 python pyponotify.py "$@"
+gtimeout --signal=KILL 45 python pyponotify.py "$@"

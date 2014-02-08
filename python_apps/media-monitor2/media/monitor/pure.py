@@ -114,7 +114,13 @@ def clean_empty_dirs(path):
             full_paths = ( os.path.join(root, d) for d in dirs )
             for d in full_paths:
                 if os.path.exists(d):
-                    if not os.listdir(d): os.removedirs(d)
+                    #Try block avoids a race condition where a file is added AFTER listdir
+                    #is run but before removedirs. (Dir is not empty and removedirs throws
+                    #an exception in that case then.)
+                    try: 
+                        if not os.listdir(d): os.rmdir(d)
+                    except OSError:
+                        pass
 
 def extension(path):
     """
@@ -276,7 +282,7 @@ def organized_path(old_path, root_path, orig_md):
         r = "(?P<show>.+)-(?P<date>\d+-\d+-\d+)-(?P<time>\d+:\d+:\d+)$"
         title_re    = re.match(r, normal_md['MDATA_KEY_TITLE'])
         show_name   = title_re.group('show')
-		  show_name   = show_name.replace(' ', '_')
+        show_name   = show_name.replace(' ', '_')
         show_name   = show_name.replace('/', '')
         date        = title_re.group('date')
         date_parts  = date.split('-')
