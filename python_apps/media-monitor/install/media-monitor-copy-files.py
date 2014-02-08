@@ -54,7 +54,7 @@ try:
 
     #copy monit files
     shutil.copy('%s/../../monit/monit-airtime-generic.cfg'%current_script_dir, '/usr/local/etc/monit.d/')
-    subprocess.call('sed -i "s/\$admin_pass/%s/g" /usr/local/etc/monit.d/monit-airtime-generic.cfg' % get_rand_string(), shell=True)
+    subprocess.call('sed -ie "s/\$admin_pass/%s/g" /usr/local/etc/monit.d/monit-airtime-generic.cfg' % get_rand_string(), shell=True)
     shutil.copy('%s/../monit-airtime-media-monitor.cfg'%current_script_dir, '/usr/local/etc/monit.d/')
 
     #create log dir

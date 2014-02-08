@@ -63,6 +63,6 @@ fi
 if [ "$pypo" = "t" ]; then
     echo monit monitor airtime-playout
     monit monitor airtime-playout
-    echo monit monitor airtime-liquidsoap
+    echo monit monitor airtime_liquidsoap
     monit monitor airtime_liquidsoap
 fi

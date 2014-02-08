@@ -20,6 +20,11 @@ command=/usr/local/lib/airtime/pypo/bin/airtime-liquidsoap
 
 load_rc_config $name
 
+LANG=en_GB.UTF-8
+export LANG
+LC_ALL=en_GB.UTF-8
+export LC_ALL
+
 : ${airtime_liquidsoap_enable:="NO"}
 : ${airtime_liquidsoap_pidfile:="/var/run/airtime-liquidsoap.pid"}
 : ${airtime-liquidsoap_config:="/usr/local/lib/airtime/pypo/bin/liquidsoap_scripts/ls_script.liq"}

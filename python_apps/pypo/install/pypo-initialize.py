@@ -79,8 +79,10 @@ try:
         sys.exit(1)
 
     #initialize init.d scripts
-    subprocess.call("update-rc.d airtime-playout defaults >/dev/null 2>&1", shell=True)
-    subprocess.call("update-rc.d airtime-liquidsoap defaults >/dev/null 2>&1", shell=True)
+    # It's fix these to edit /etc/rc.conf
+    #subprocess.call("update-rc.d airtime-playout defaults >/dev/null 2>&1", shell=True)
+    #subprocess.call("update-rc.d airtime-liquidsoap defaults >/dev/null 2>&1", shell=True)
+    print "* Not editing /etc/rc.conf quite yet - do this later"
 
     #clear out an previous pypo cache
     print "* Clearing previous pypo cache"

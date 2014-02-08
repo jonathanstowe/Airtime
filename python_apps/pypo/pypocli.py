@@ -74,7 +74,7 @@ parser.add_option("-c",
 # parse options
 (options, args) = parser.parse_args()
 
-LIQUIDSOAP_MIN_VERSION = "1.1.1"
+LIQUIDSOAP_MIN_VERSION = "1.0.0"
 
 
 #need to wait for Python 2.7 for this..
