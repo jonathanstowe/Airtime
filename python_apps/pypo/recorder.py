@@ -23,6 +23,11 @@ from threading import Thread
 
 import mutagen
 
+# common metadata definitions
+
+import airtime_common.airtime_meta
+
+
 from api_clients import api_client as apc
 
 def api_client(logger):
@@ -149,13 +154,23 @@ class ShowRecorder(Thread):
             self.logger.info("time: %s" % full_time)
             artist = config["recorded_artist"]
             #set some metadata for our file daemon
+				# The preference here is to use "real" metadata that
+				# we'd like to appear in public, for things that are just
+				# used internally use our private keys defined in the airtime_meta
             recorded_file           = mutagen.File(filepath, easy = True)
+				recorded_file["airtime_recorded"] = "yes"
+            recorded_file["airtime_show"] = self.show_name
+            recorded_file["airtime_show_date"] = full_date
+            recorded_file["airtime_show_time"] = full_date
             recorded_file['artist'] = artist
             recorded_file['date']   = full_date
             recorded_file['title'] = "%s-%s-%s" % (self.show_name,
                     full_date, full_time)
-            #You cannot pass ints into the metadata of a file. Even tracknumber needs to be a string
-            recorded_file['tracknumber'] = unicode(self.show_instance)
+            #You cannot pass ints into the metadata of a file. 
+				# Even tracknumber needs to be a string
+				u_show_instance = unicode(self.show_instance)
+            recorded_file["airtime_show_instance"] = u_show_instance
+            recorded_file['tracknumber'] = u_show_instance
             recorded_file.save()
 
         except Exception, e:

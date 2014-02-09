@@ -10,6 +10,10 @@ from media.monitor.log        import Loggable
 from media.monitor.pure       import format_length
 import media.monitor.pure as mmp
 
+# our local defined metadata keys, defined as TXXX tags
+
+import airtime_common.airtime_meta
+
 # emf related stuff
 from media.metadata.process import global_reader
 import media.metadata.definitions as defs
@@ -47,6 +51,16 @@ airtime2mutagen = {
     "MDATA_KEY_COPYRIGHT"   : "copyright",
     "MDATA_KEY_CUE_IN"      : "cuein",
     "MDATA_KEY_CUE_OUT"     : "cueout",
+	 # The following are defined in the airtime_common.airtime_meta
+	 # This is primarily for the benefit of the recorder stuff
+	 "MDATA_KEY_RECORDED"	 : "airtime_recorded",
+	 "MDATA_KEY_SHOW_NAME"	 :	"airtime_show",
+    "MDATA_KEY_DESCRIPTION" : "airtime_description",
+	 "MDATA_KEY_SHOW_GENRE"  : "airtime_genre",
+    "MDATA_KEY_WHO"			 :	"airtime_who",
+    "MDATA_KEY_INSTANCE"	 :	"airtime_show_instance",
+	 "MDATA_KEY_SHOW_DATE"	 :	"airtime_show_date",
+	 "MDATA_KEY_SHOW_TIME"	 : "airtime_show_time",
 }
 
 #doesn't make sense for us to write these values to a track's metadata

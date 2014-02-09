@@ -94,8 +94,8 @@ def is_file_supported(path):
 def is_airtime_recorded(md):
     """ Takes a metadata dictionary and returns True if it belongs to a
     file that was recorded by Airtime. """
-    if not 'MDATA_KEY_CREATOR' in md: return False
-    return md['MDATA_KEY_CREATOR'] == u'Airtime Show Recorder'
+    if not 'MDATA_KEY_RECORDED' in md: return False
+    return md['MDATA_KEY_RECORDED'] == u'yes'
 
 def read_wave_duration(path):
     """ Read the length of .wav file (mutagen does not handle this) """
