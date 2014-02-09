@@ -10,6 +10,10 @@ from mutagen.easyid3 import EasyID3
 # want for public consumption
 
 # This should be synchronised with pure.py
+# media-monitor2/media/metadata/definitions.py
+# media-monitor2/media/monitor/metadata.py
+# etc.  This is not ideal
+
 airtime_txxx_fields	=	{
 									u"Airtime Recorded": "airtime_recorded",
 									u"Airtime Show Name": "airtime_show",

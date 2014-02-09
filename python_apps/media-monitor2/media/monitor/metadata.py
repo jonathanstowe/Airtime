@@ -53,6 +53,7 @@ airtime2mutagen = {
     "MDATA_KEY_CUE_OUT"     : "cueout",
 	 # The following are defined in the airtime_common.airtime_meta
 	 # This is primarily for the benefit of the recorder stuff
+    # need to also change the definitions.py and the airtime_meta.py
 	 "MDATA_KEY_RECORDED"	 : "airtime_recorded",
 	 "MDATA_KEY_SHOW_NAME"	 :	"airtime_show",
     "MDATA_KEY_DESCRIPTION" : "airtime_description",
@@ -152,7 +153,12 @@ class Metadata(Loggable):
         """
         returns true if the file has been created by airtime through recording
         """
-        return mmp.is_airtime_recorded( self.__metadata )
+        if mmp.is_airtime_recorded( self.__metadata ) :
+            self.logger.debug("Recorded track")
+            return True
+        else :
+            return False
+
 
     def extract(self):
         """

@@ -2,6 +2,7 @@
 import copy
 from subprocess import Popen, PIPE
 import subprocess
+
 import os
 import math
 import wave
@@ -13,6 +14,7 @@ import stat
 import hashlib
 import locale
 import operator as op
+
 
 from os.path   import normpath
 from itertools import takewhile

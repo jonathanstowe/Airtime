@@ -156,3 +156,44 @@ def load_definitions():
     with md.metadata('MDATA_KEY_LABEL') as t:
         t.depends('label')
         t.max_length(512)
+
+    # The following are defined in the airtime_common.airtime_meta
+    # This is primarily for the benefit of the recorder stuff
+    with md.metadata("MDATA_KEY_RECORDED") as t:
+        t.depends("airtime_recorded")
+        t.default(u'no')
+        t.max_length(10)
+
+    with md.metadata("MDATA_KEY_SHOW_NAME") as t:
+        t.depends("airtime_show")
+        t.default(u'')
+        t.max_length(512)
+
+    with md.metadata("MDATA_KEY_DESCRIPTION") as t:
+        t.depends("airtime_description")
+        t.default(u'')
+        t.max_length(512)
+
+    with md.metadata("MDATA_KEY_SHOW_GENRE") as t:
+        t.depends("airtime_genre")
+        t.default(u'')
+        t.max_length(512)
+
+    with md.metadata("MDATA_KEY_WHO") as t:
+        t.depends("airtime_who")
+        t.default(u'')
+        t.max_length(512)
+
+    with md.metadata("MDATA_KEY_INSTANCE") as t:
+        t.depends("airtime_show_instance")
+        t.max_value(MAX_SIGNED_INT)
+
+    with md.metadata("MDATA_KEY_SHOW_DATE") as t:
+        t.depends("airtime_show_date")
+        t.max_length(10)
+
+    with md.metadata("MDATA_KEY_SHOW_TIME") as t:
+        t.depends("airtime_show_time")
+        t.max_length(8)
+
+
