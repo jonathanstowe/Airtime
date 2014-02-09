@@ -128,14 +128,17 @@ monit unmonitor airtime-media-monitor >/dev/null 2>&1
 monit unmonitor airtime-liquidsoap >/dev/null 2>&1
 monit unmonitor airtime-playout >/dev/null 2>&1
 set -e
-if [ -e /etc/init.d/airtime-media-monitor ]; then
-    invoke-rc.d airtime-media-monitor stop > /dev/null 2>&1
+
+INITDIR=/usr/local/rc.d
+
+if [ -e $INITDIR/airtime_media_monitor ]; then
+    $INITDIR/airtime_media_monitor stop > /dev/null 2>&1
 fi
-if [ -e /etc/init.d/airtime-playout ]; then
-    invoke-rc.d airtime-playout stop > /dev/null 2>&1
+if [ -e $INITDIR/airtime_playout ]; then
+    $INITDIR/airtime_playout stop > /dev/null 2>&1
 fi
-if [ -e /etc/init.d/airtime-liquidsoap ]; then
-    invoke-rc.d airtime-liquidsoap stop > /dev/null 2>&1
+if [ -e $INITDIR/airtime_liquidsoap ]; then
+    $INITDIR/airtime_liquidsoap stop > /dev/null 2>&1
 fi
 
 #export these variables to make them available in sub bash scripts
