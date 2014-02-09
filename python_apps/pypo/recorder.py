@@ -158,7 +158,7 @@ class ShowRecorder(Thread):
 				# we'd like to appear in public, for things that are just
 				# used internally use our private keys defined in the airtime_meta
             recorded_file           = mutagen.File(filepath, easy = True)
-				recorded_file["airtime_recorded"] = "yes"
+            recorded_file["airtime_recorded"] = "yes"
             recorded_file["airtime_show"] = self.show_name
             recorded_file["airtime_show_date"] = full_date
             recorded_file["airtime_show_time"] = full_date
@@ -168,7 +168,7 @@ class ShowRecorder(Thread):
                     full_date, full_time)
             #You cannot pass ints into the metadata of a file. 
 				# Even tracknumber needs to be a string
-				u_show_instance = unicode(self.show_instance)
+            u_show_instance = unicode(self.show_instance)
             recorded_file["airtime_show_instance"] = u_show_instance
             recorded_file['tracknumber'] = u_show_instance
             recorded_file.save()
