@@ -161,11 +161,12 @@ class ShowRecorder(Thread):
             recorded_file["airtime_recorded"] = "yes"
             recorded_file["airtime_show"] = self.show_name
             recorded_file["airtime_show_date"] = full_date
-            recorded_file["airtime_show_time"] = full_date
+            recorded_file["airtime_show_time"] = full_time
             recorded_file['artist'] = artist
             recorded_file['date']   = full_date
-            recorded_file['title'] = "%s-%s-%s" % (self.show_name,
-                    full_date, full_time)
+            yyyy,mm,dd = full_date.split("-",3)
+            
+            recorded_file['title'] = "%s %s" % (self.show_name, full_date)
             #You cannot pass ints into the metadata of a file. 
 				# Even tracknumber needs to be a string
             u_show_instance = unicode(self.show_instance)

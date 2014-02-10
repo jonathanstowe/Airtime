@@ -30,8 +30,8 @@ supported_extensions = [u"mp3", u"ogg", u"oga", u"flac", u"wav",
 
 unicode_unknown = u'unknown'
 
-path_md = ['MDATA_KEY_TITLE', 'MDATA_KEY_CREATOR', 'MDATA_KEY_SOURCE',
-            'MDATA_KEY_TRACKNUMBER', 'MDATA_KEY_BITRATE']
+path_md = ['MDATA_KEY_SHOW_NAME', 'MDATA_KEY_TITLE', 'MDATA_KEY_CREATOR', 'MDATA_KEY_SOURCE',
+            'MDATA_KEY_TRACKNUMBER', 'MDATA_KEY_BITRATE', 'MDATA_KEY_SHOW_DATE']
 
 class LazyProperty(object):
     """
@@ -280,13 +280,11 @@ def organized_path(old_path, root_path, orig_md):
         normal_md['MDATA_KEY_BITRATE'] = unicode_unknown
 
     if is_airtime_recorded(normal_md):
-        # normal_md['MDATA_KEY_TITLE'] = 'show_name-yyyy-mm-dd-hh:mm:ss'
-        r = "(?P<show>.+)-(?P<date>\d+-\d+-\d+)-(?P<time>\d+:\d+:\d+)$"
-        title_re    = re.match(r, normal_md['MDATA_KEY_TITLE'])
-        show_name   = title_re.group('show')
+        # We'll be using the TXXX tags we set at record time
+        show_name   = normal_md['MDATA_KEY_SHOW_NAME']
         show_name   = show_name.replace(' ', '_')
         show_name   = show_name.replace('/', '')
-        date        = title_re.group('date')
+        date        = normal_md['MDATA_KEY_SHOW_DATE']
         date_parts  = date.split('-')
         iso_date    = "%s%s%s" % (date_parts[0], date_parts[1], date_parts[2])
         yyyy, mm, _ = normal_md['MDATA_KEY_YEAR'].split('-',2)
