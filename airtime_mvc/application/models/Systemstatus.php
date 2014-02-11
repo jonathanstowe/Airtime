@@ -215,21 +215,23 @@ class Application_Model_Systemstatus
     {
         $partitions = array();
 
-        //connect to DB and find how much total space user has allocated.
-        $totalSpace = Application_Model_Preference::GetDiskQuota();
+        /* First lets get all the watched directories. Then we can group them
+        * into the same partitions by comparing the partition sizes. */
+        $musicDirs = Application_Model_MusicDir::getWatchedDirs();
+        $musicDirs[] = Application_Model_MusicDir::getStorDir();
 
-        $path = $_SERVER['AIRTIME_BASE']."etc/airtime/num_bytes.ini";
-        $arr = parse_ini_file($path);
+        foreach ($musicDirs as $md) {
+            $totalSpace = disk_total_space($md->getDirectory());
 
-        $usedSpace = 0;
-        if ($arr !== false) {
-            $usedSpace = $arr['num_bytes'];
+            if (!isset($partitions[$totalSpace])) {
+                $partitions[$totalSpace] = new StdClass;
+                $partitions[$totalSpace]->totalSpace = $totalSpace;
+                $partitions[$totalSpace]->totalFreeSpace = disk_free_space($md->getDirectory());
+
+            }
+
+            $partitions[$totalSpace]->dirs[] = $md->getDirectory();
         }
-        
-        $partitions[$totalSpace] = new stdClass();
-        $partitions[$totalSpace]->totalSpace = $totalSpace;
-        $partitions[$totalSpace]->totalFreeSpace = $totalSpace - $usedSpace;
-        Logging::info($partitions[$totalSpace]->totalFreeSpace);
 
         return array_values($partitions);
     }

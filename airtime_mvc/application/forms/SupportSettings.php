@@ -4,6 +4,7 @@ require_once 'customfilters/ImageSize.php';
 
 class Application_Form_SupportSettings extends Zend_Form
 {
+
     public function init()
     {
         $country_list = Application_Model_Preference::GetCountryList();
@@ -127,6 +128,20 @@ class Application_Form_SupportSettings extends Zend_Form
             }
             $this->addElement($checkboxPublicise);
 
+            // text area for sending detail
+            $this->addElement('textarea', 'SendInfo', array(
+                'class'        => 'sending_textarea',
+                'required'   => false,
+                'filters'    => array('StringTrim'),
+                'readonly'    => true,
+                'cols'     => 61,
+                'rows'        => 5,
+                'value' => Application_Model_Preference::GetSystemInfo(false, true),
+                'decorators' => array(
+                    'ViewHelper'
+                )
+            ));
+
             // checkbox for privacy policy
             $checkboxPrivacy = new Zend_Form_Element_Checkbox("Privacy");
             $checkboxPrivacy->setLabel(
@@ -149,6 +164,7 @@ class Application_Form_SupportSettings extends Zend_Form
     public function isValid ($data)
     {
         $isValid = parent::isValid($data);
+
         if (isset($data["Privacy"])) {
             $checkPrivacy = $this->getElement('Privacy');
             if ($data["SupportFeedback"] == "1" && $data["Privacy"] != "1") {

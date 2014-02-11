@@ -10,12 +10,10 @@ import time
 from api_clients import api_client
 
 class ListenerStat(Thread):
-
     HTTP_REQUEST_TIMEOUT = 30 # 30 second HTTP request timeout
 
-    def __init__(self, config, logger=None):
+    def __init__(self, logger=None):
         Thread.__init__(self)
-        self.config = config
         self.api_client = api_client.AirtimeApiClient()
         if logger is None:
             self.logger = logging.getLogger()
@@ -52,18 +50,12 @@ class ListenerStat(Thread):
 
         f = urllib2.urlopen(req, timeout=ListenerStat.HTTP_REQUEST_TIMEOUT)
         document = f.read()
-
         return document
 
 
     def get_icecast_stats(self, ip):
-        document = None
-        if "airtime.pro" in ip["host"].lower():
-            url = 'http://%(host)s:%(port)s/stats.xsl' % ip
-            document = self.get_stream_server_xml(ip, url)
-        else:
-            url = 'http://%(host)s:%(port)s/admin/stats.xml' % ip
-            document = self.get_stream_server_xml(ip, url)
+        url = 'http://%(host)s:%(port)s/admin/stats.xml' % ip
+        document = self.get_stream_server_xml(ip, url)
         dom = xml.dom.minidom.parseString(document)
         sources = dom.getElementsByTagName("source")
 
@@ -166,5 +158,5 @@ if __name__ == "__main__":
     # add ch to logger
     #logger.addHandler(ch)
 
-    #ls = ListenerStat(logger=logger)
-    #ls.run()
+    ls = ListenerStat(logger)
+    ls.run()

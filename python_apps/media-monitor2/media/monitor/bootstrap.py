@@ -42,17 +42,9 @@ class Bootstrapper(Loggable):
             # this changes occured in the filesystem hence it will send the
             # correct events to sync the database with the filesystem
             if os.path.getmtime(f) > last_ran:
-                # A modify event is created on every file when media monitor is
-                # restarted. This causes all metadata to get rescanned.
-                # We want to disable this for saas because rescanning every file
-                # takes way too long and the file contents should never become
-                # out of sync with the db on saas
-                # See SAAS-397
-                """
                 modded += 1
                 dispatcher.send(signal=self.watch_signal, sender=self,
                         event=ModifyFile(f))
-                """
         db_songs = set(( song for song in self.db.directory_get_files(directory,
             all_files)
             if mmp.sub_path(directory,song) ))
