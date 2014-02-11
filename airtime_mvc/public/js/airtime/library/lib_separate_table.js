@@ -7,7 +7,8 @@ var AIRTIME = (function(AIRTIME) {
     
     //stored in format chosenItems[tabname] = object of chosen ids for the tab.
     var chosenItems = {},
-    	LIB_SELECTED_CLASS = "lib-selected";
+    	LIB_SELECTED_CLASS = "lib-selected",
+    	$library;
     
     function makeWebstreamDialog(html) {
 		var $wsDialogEl = $(html);
@@ -106,7 +107,7 @@ var AIRTIME = (function(AIRTIME) {
     		display = config.display ? "" : "style='display:none;'";
     	
     	template = 
-    		"<div id='advanced_search_col_<%= index %>' class='control-group' <%= style %>>" +
+    		"<div id='advanced_search_<%= type %>_col_<%= index %>' class='control-group' <%= style %>>" +
             	"<label class='control-label'><%= title %></label>" +
             	"<div id='<%= id %>' class='controls'></div>" +
             "</div>";
@@ -116,7 +117,8 @@ var AIRTIME = (function(AIRTIME) {
     		index: config.index,
     		style: display,
     		title: config.title,
-    		id: config.id
+    		id: config.id,
+    		type: config.type
     	}));
     	
     	return $el;
@@ -124,33 +126,52 @@ var AIRTIME = (function(AIRTIME) {
     
     function setUpAdvancedSearch(columns, type) {
     	var i, len,
+    		prop,
     		selector = "#advanced_search_"+type,
     		$div = $(selector),
-    		col, tmp,
-    		searchFields = [];
+    		col,
+    		field,
+    		colConfig,
+    		searchFields = [],
+    		datatablesConfig = [],
+    		config;
     	
     	for (i = 0, len = columns.length; i < len; i++) {
     		
     		col = columns[i];
     		
     		if (col.bSearchable) {
-    			tmp = createAdvancedSearchField({
+    			
+    			prop = col.mDataProp.split(".").pop();
+    			
+    			config = {
         			index: i,
         			display: col.bVisible,
         			title: col.sTitle,
-        			id: "adv-search-"+ col.mDataProp
-        		});
+        			id: "adv-search-" + type + "-" + prop,
+        			type: type
+        		};
     			
-    			searchFields.push(tmp);
+    			field = createAdvancedSearchField(config);
+    			searchFields.push(field);
+
+    			colConfig = col["search"];
+    			colConfig["sSelector"] =  "#"+config.id;
+    			datatablesConfig.push(colConfig);
+    		}
+    		else {
+    			datatablesConfig.push(null);
     		}
     	}
     	
     	//http://www.bennadel.com/blog/2281-jQuery-Appends-Multiple-Elements-Using-Efficient-Document-Fragments.htm
     	$div.append(searchFields);
+    	
+    	return datatablesConfig;
     }
     
-    function setAdvancedSearchColumnDisplay(colNum, display) {
-    	var selector = "#advanced_search_col_" + colNum,
+    function setAdvancedSearchColumnDisplay(colNum, display, type) {
+    	var selector = "#advanced_search_" + type + "_col_" + colNum,
     		$column = $(selector);
     	
     	if (display) {
@@ -165,9 +186,10 @@ var AIRTIME = (function(AIRTIME) {
     	var key = "datatables-"+config.type+"-aoColumns",
     		columns = JSON.parse(localStorage.getItem(key)),
     		abVisible,
-    		i, len;
+    		i, len,
+    		searchConfig;
     	
-    	setUpAdvancedSearch(columns, config.type);
+    	searchConfig = setUpAdvancedSearch(columns, config.type);
     	
     	var table = $("#"+config.type + "_table").dataTable({
     		"aoColumns": columns,
@@ -264,12 +286,15 @@ var AIRTIME = (function(AIRTIME) {
                 	var c = table.fnSettings().aoColumns,
                 		origIndex = c[iColumn]._ColReorder_iOrigCol;
                 		
-                	setAdvancedSearchColumnDisplay(origIndex, bVisible);
+                	setAdvancedSearchColumnDisplay(origIndex, bVisible, config.type);
                 }
             },
             
             "oColReorder": {
-                "iFixedColumns": 1
+                "iFixedColumns": 1,
+                "fnReorderCallback": function () {
+                    var x;
+                }
             },
             
 			"fnRowCallback": function( nRow, aData, iDisplayIndex ) {
@@ -280,10 +305,15 @@ var AIRTIME = (function(AIRTIME) {
     	//fnStateLoadParams will have already run.
     	//fix up advanced search from saved settings.
     	for (i = 0, len = abVisible.length; i < len; i++) {
-    		setAdvancedSearchColumnDisplay(i, abVisible[i]);
+    		setAdvancedSearchColumnDisplay(i, abVisible[i], config.type);
     	}
     	
-    	table.fnSetFilteringDelay(350);
+    	table.columnFilter({
+    		aoColumns: searchConfig,
+    		sPlaceHolder: "head:before"
+    	});
+    	
+    	table.fnFilterOnReturn();
     }
     
     mod.downloadMedia = function(data) {
@@ -362,7 +392,7 @@ var AIRTIME = (function(AIRTIME) {
         $el.removeClass(LIB_SELECTED_CLASS);
     };
     
-  //$el is a select table row <tr>
+    //$el is a select table row <tr>
     mod.selectItem = function($el) {
         
         mod.highlightItem($el);
@@ -371,7 +401,7 @@ var AIRTIME = (function(AIRTIME) {
         mod.checkToolBarIcons();
     };
     
-  //$el is a select table row <tr>
+    //$el is a select table row <tr>
     mod.deselectItem = function($el) {
         
         mod.unHighlightItem($el);
@@ -389,8 +419,9 @@ var AIRTIME = (function(AIRTIME) {
      */
     mod.selectCurrentPage = function() {
         $.fn.reverse = [].reverse;
-        var $inputs = $libTable.find("tbody input:checkbox"),
-            $trs = $inputs.parents("tr").reverse();
+        var tabId = getActiveTabId(),
+	    	$inputs = $library.find("#"+tabId).find("tbody input:checkbox"),
+	        $trs = $inputs.parents("tr").reverse();
             
         $inputs.attr("checked", true);
         $trs.addClass(LIB_SELECTED_CLASS);
@@ -408,31 +439,33 @@ var AIRTIME = (function(AIRTIME) {
      * from gmail)
      */
     mod.deselectCurrentPage = function() {
-        var $inputs = $libTable.find("tbody input:checkbox"),
-            $trs = $inputs.parents("tr"),
-            id;
+    	var tabId = getActiveTabId(),
+	    	$inputs = $library.find("#"+tabId).find("tbody input:checkbox"),
+	        $trs = $inputs.parents("tr");
         
         $inputs.attr("checked", false);
         $trs.removeClass(LIB_SELECTED_CLASS);
         
         $trs.each(function(i, el){
             $el = $(this);
-            id = $el.attr("id");
-            delete chosenItems[id];
+            mod.removeFromChosen($el);
         });
         
         mod.checkToolBarIcons();     
     };
     
+    /*
+     * resets the chosenItems object, everything is gone (from a tab only).
+     */
     mod.selectNone = function() {
-        var $inputs = $libTable.find("tbody input:checkbox"),
+        var tabId = getActiveTabId(),
+        	$inputs = $library.find("#"+tabId).find("tbody input:checkbox"),
             $trs = $inputs.parents("tr");
         
         $inputs.attr("checked", false);
         $trs.removeClass(LIB_SELECTED_CLASS);
-        
-        chosenItems = {};
-        
+       
+        delete chosenItems[tabId];
         mod.checkToolBarIcons();
     };
     
@@ -445,9 +478,9 @@ var AIRTIME = (function(AIRTIME) {
                             $.i18n._("Select")+" <span class='caret'></span>" +
                         "</button>" +
                         "<ul class='dropdown-menu'>" +
-                            "<li id='sb-select-page'><a href='#'>"+$.i18n._("Select this page")+"</a></li>" +
-                            "<li id='sb-dselect-page'><a href='#'>"+$.i18n._("Deselect this page")+"</a></li>" +
-                            "<li id='sb-dselect-all'><a href='#'>"+$.i18n._("Deselect all")+"</a></li>" +
+                            "<li class='lib-select-page'><a href='#'>"+$.i18n._("Select this page")+"</a></li>" +
+                            "<li class='lib-dselect-page'><a href='#'>"+$.i18n._("Deselect this page")+"</a></li>" +
+                            "<li class='lib-dselect-all'><a href='#'>"+$.i18n._("Deselect all")+"</a></li>" +
                         "</ul>" +
                     "</div>")
             .append("<div class='btn-group'>" +
@@ -467,8 +500,7 @@ var AIRTIME = (function(AIRTIME) {
      
     mod.onReady = function () {
     	
-    	var $library = $("#library_content"),
-    		$body = $("body");
+    	$library = $("#library_content");
 
     	var tabsInit = {
     		"lib_audio": {
@@ -564,7 +596,6 @@ var AIRTIME = (function(AIRTIME) {
     	});
     	
     	$library.on("click", "input[type=checkbox]", function(e) {
-    		e.preventDefault();
     		e.stopPropagation();
             
             var $cb = $(this),
@@ -615,6 +646,29 @@ var AIRTIME = (function(AIRTIME) {
             data = $tr.data("aData");
             mod.dblClickAdd(data);
     	});
+    	
+    	//start events for select dropdown on media tables.
+    	$library.on("click", '.lib-select-page', function(e) {
+    		e.preventDefault();
+    		e.stopPropagation();
+    		
+    		mod.selectCurrentPage();
+    	});
+    	
+    	$library.on("click", '.lib-dselect-page', function(e) {
+    		e.preventDefault();
+    		e.stopPropagation();
+    		
+    		mod.deselectCurrentPage();
+    	});
+    	
+    	$library.on("click", '.lib-dselect-all', function(e) {
+    		e.preventDefault();
+    		e.stopPropagation();
+    		
+    		mod.selectNone();
+    	});
+    	//end events for select dropdown.
     	
     	//events for the edit metadata dialog
     	/*
