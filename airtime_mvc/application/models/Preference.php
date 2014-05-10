@@ -7,9 +7,8 @@ class Application_Model_Preference
 	
 	private static function getUserId()
 	{
-		//pass in true so the check is made with the autoloader
-		//we need this check because saas calls this function from outside Zend
-		if (!class_exists("Zend_Auth", true) || !Zend_Auth::getInstance()->hasIdentity()) {
+		//called from a daemon process
+		if (!class_exists("Zend_Auth", false) || !Zend_Auth::getInstance()->hasIdentity()) {
 			$userId = null;
 		}
 		else {
@@ -68,7 +67,7 @@ class Application_Model_Preference
             elseif ($result == 1) {
             	
                 // result found
-                if (!$isUserValue) {
+                if (is_null($userId)) {
                     // system pref
                     $sql = "UPDATE cc_pref"
                     ." SET subjid = NULL, valstr = :value"
@@ -86,7 +85,7 @@ class Application_Model_Preference
             else {
             	
                 // result not found
-                if (!$isUserValue) {
+                if (is_null($userId)) {
                     // system pref
                     $sql = "INSERT INTO cc_pref (keystr, valstr)"
                     ." VALUES (:key, :value)";
@@ -133,7 +132,7 @@ class Application_Model_Preference
         	if ($isUserValue && is_null($userId)) {
         		throw new Exception("User id can't be null for a user preference.");
         	}
-
+        	 
         	$res = $cache->fetch($key, $isUserValue, $userId);
         	if ($res) {
         		Logging::debug("returning {$key} {$userId} from cache. = {$res}");
@@ -148,7 +147,9 @@ class Application_Model_Preference
             $paramMap[':key'] = $key;
             
             //For user specific preference, check if id matches as well
-            if ($isUserValue) {                         
+
+            if ($isUserValue) {
+               
                 $sql .= " AND subjid = :id";
                 $paramMap[':id'] = $userId;
             }
@@ -226,7 +227,6 @@ class Application_Model_Preference
      */
     public static function SetShowsPopulatedUntil($dateTime)
     {
-        $dateTime->setTimezone(new DateTimeZone("UTC"));
         self::setValue("shows_populated_until", $dateTime->format("Y-m-d H:i:s"));
     }
 
@@ -544,6 +544,8 @@ class Application_Model_Preference
     public static function SetDefaultTimezone($timezone)
     {
         self::setValue("timezone", $timezone);
+        //TODO check this if setting value failes.
+        date_default_timezone_set($timezone);
     }
 
     // Returns station default timezone (from preferences)

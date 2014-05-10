@@ -40,7 +40,8 @@ class CcShowDays extends BaseCcShowDays {
         );
 
         //set timezone to that of the show
-        //$dt->setTimezone(new DateTimeZone($this->getDbTimezone()));
+        $dt->setTimezone(new DateTimeZone($this->getDbTimezone()));
+
         return $dt;
     }
 
@@ -49,9 +50,9 @@ class CcShowDays extends BaseCcShowDays {
      * Returns the end of a show in the timezone it was created in
      * @param DateTime $startDateTime first show in show's local time
      */
-    public function getLocalEndDateAndTime()
+    public function getLocalEndDateAndTime($showStart)
     {
-        $startDateTime = $this->getLocalStartDateAndTime();
+        $startDateTime = clone $showStart;
         $duration = explode(":", $this->getDbDuration());
 
         return $startDateTime->add(new DateInterval('PT'.$duration[0].'H'.$duration[1].'M'));

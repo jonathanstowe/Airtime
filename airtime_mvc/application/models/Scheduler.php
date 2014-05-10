@@ -515,9 +515,6 @@ class Application_Model_Scheduler
     private function insertAfter($scheduleItems, $mediaItems, $filesToInsert=null, $adjustSched=true, $moveAction=false)
     {
         try {
-            // temporary fix for CC-5665
-            set_time_limit(180);
-
             $affectedShowInstances = array();
 
             //dont want to recalculate times for moved items
@@ -761,14 +758,10 @@ class Application_Model_Scheduler
                         $file['fadein'] = Application_Common_DateHelper::secondsToPlaylistTime($file['fadein']);
                         $file['fadeout'] = Application_Common_DateHelper::secondsToPlaylistTime($file['fadeout']);
 
-                        //array that stores the cc_file ids so we can update the is_scheduled flag
-                        $fileIds = array();
-
                         switch ($file["type"]) {
                             case 0:
                                 $fileId = $file["id"];
                                 $streamId = "null";
-                                $fileIds[] = $fileId;
                                 break;
                             case 1:
                                 $streamId = $file["id"];
@@ -836,7 +829,11 @@ class Application_Model_Scheduler
                             }
                         };
                     }
-
+                    // update is_scheduled flag for each cc_file
+                    $fileIds = array();
+                    foreach ($filesToInsert as &$file) {
+                        $fileIds[] = $file["id"];
+                    }
                     $selectCriteria = new Criteria();
                     $selectCriteria->add(CcFilesPeer::ID, $fileIds, Criteria::IN);
                     $selectCriteria->addAnd(CcFilesPeer::IS_SCHEDULED, false);

@@ -32,13 +32,10 @@ class PlayouthistoryController extends Zend_Controller_Action
         $from = $request->getParam("from", $now - (24*60*60));
         $to = $request->getParam("to", $now);
 
-        $utcTimezone = new DateTimeZone("UTC");
-        $displayTimeZone = new DateTimeZone(Application_Model_Preference::GetTimezone());
-
-        $start = DateTime::createFromFormat("U", $from, $utcTimezone);
-        $start->setTimezone($displayTimeZone);
-        $end = DateTime::createFromFormat("U", $to, $utcTimezone);
-        $end->setTimezone($displayTimeZone);
+        $start = DateTime::createFromFormat("U", $from, new DateTimeZone("UTC"));
+        $start->setTimezone(new DateTimeZone(date_default_timezone_get()));
+        $end = DateTime::createFromFormat("U", $to, new DateTimeZone("UTC"));
+        $end->setTimezone(new DateTimeZone(date_default_timezone_get()));
 
         $form = new Application_Form_DateRange();
         $form->populate(array(
@@ -57,6 +54,8 @@ class PlayouthistoryController extends Zend_Controller_Action
         $this->view->headScript()->appendFile($baseUrl.'js/datatables/plugin/TableTools-2.1.5/js/ZeroClipboard.js?'.$CC_CONFIG['airtime_version'],'text/javascript');
         $this->view->headScript()->appendFile($baseUrl.'js/datatables/plugin/TableTools-2.1.5/js/TableTools.js?'.$CC_CONFIG['airtime_version'],'text/javascript');
 
+        $offset = date("Z") * -1;
+        $this->view->headScript()->appendScript("var serverTimezoneOffset = {$offset}; //in seconds");
         $this->view->headScript()->appendFile($baseUrl.'js/timepicker/jquery.ui.timepicker.js?'.$CC_CONFIG['airtime_version'],'text/javascript');
         $this->view->headScript()->appendFile($baseUrl.'js/bootstrap-datetime/bootstrap-datetimepicker.js?'.$CC_CONFIG['airtime_version'],'text/javascript');
         $this->view->headScript()->appendFile($baseUrl.'js/airtime/buttons/buttons.js?'.$CC_CONFIG['airtime_version'],'text/javascript');

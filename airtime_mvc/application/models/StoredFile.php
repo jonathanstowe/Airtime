@@ -794,9 +794,6 @@ SQL;
         self::updatePastFilesIsScheduled();
         $results = Application_Model_Datatables::findEntries($con, $displayColumns, $fromTable, $datatables);
 
-        $displayTimezone = new DateTimeZone(Application_Model_Preference::GetUserTimezone());
-        $utcTimezone = new DateTimeZone("UTC");
-        
         foreach ($results['aaData'] as &$row) {
             $row['id'] = intval($row['id']);
 
@@ -846,21 +843,14 @@ SQL;
 
             $len_formatter = new LengthFormatter($row_length);
             $row['length'] = $len_formatter->format();
-            
+
             //convert mtime and utime to localtime
-            $row['mtime'] = new DateTime($row['mtime'], $utcTimezone);
-            $row['mtime']->setTimeZone($displayTimezone);
+            $row['mtime'] = new DateTime($row['mtime'], new DateTimeZone('UTC'));
+            $row['mtime']->setTimeZone(new DateTimeZone(date_default_timezone_get()));
             $row['mtime'] = $row['mtime']->format('Y-m-d H:i:s');
-            $row['utime'] = new DateTime($row['utime'], $utcTimezone);
-            $row['utime']->setTimeZone($displayTimezone);
+            $row['utime'] = new DateTime($row['utime'], new DateTimeZone('UTC'));
+            $row['utime']->setTimeZone(new DateTimeZone(date_default_timezone_get()));
             $row['utime'] = $row['utime']->format('Y-m-d H:i:s');
-            
-            //need to convert last played to localtime if it exists.
-            if (isset($row['lptime'])) {
-            	$row['lptime'] = new DateTime($row['lptime'], $utcTimezone);
-            	$row['lptime']->setTimeZone($displayTimezone);
-            	$row['lptime'] = $row['lptime']->format('Y-m-d H:i:s');
-            }
 
             // we need to initalize the checkbox and image row because we do not retrieve
             // any data from the db for these and datatables will complain
@@ -1155,6 +1145,38 @@ SQL;
 
         if ($stmt->execute()) {
             $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } else {
+            $msg = implode(',', $stmt->errorInfo());
+            throw new Exception("Error: $msg");
+        }
+
+        return $rows;
+    }
+
+    public static function listAllRecordedFiles()
+    {
+        $con = Propel::getConnection();
+
+        $sql = <<<SQL
+SELECT 'recorded' AS file_type,
+       cc_files.id  AS file_id,
+       cc_files.mood AS file_mood,
+       cc_show.name AS show_name,
+       cc_show.description AS show_description,
+       cc_show_instances.starts AS show_time,
+       'http://archive.futuremusic.fm/' || cc_files.filepath AS file_url 
+fROM cc_files
+JOIN cc_show_instances ON cc_files.id = cc_show_instances.file_id
+JOIN cc_show ON cc_show_instances.show_id = cc_show.id
+WHERE cc_files.file_exists
+ORDER by cc_show_instances.starts ASC
+SQL;
+
+
+        $stmt = $con->prepare($sql);
+
+        if ($stmt->execute()) {
+            $rows = $stmt->fetchAll();
         } else {
             $msg = implode(',', $stmt->errorInfo());
             throw new Exception("Error: $msg");

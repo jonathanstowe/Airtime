@@ -5,7 +5,7 @@ class ApiController extends Zend_Controller_Action
 
     public function init()
     {
-        $ignoreAuth = array("live-info", "week-info");
+        $ignoreAuth = array("live-info", "week-info", "archive-info");
 
         $params = $this->getRequest()->getParams();
         if (!in_array($params['action'], $ignoreAuth)) {
@@ -46,6 +46,7 @@ class ApiController extends Zend_Controller_Action
                 ->addActionContext('update-stream-setting-table'   , 'json')
                 ->addActionContext('update-replay-gain-value'      , 'json')
                 ->addActionContext('update-cue-values-by-silan'    , 'json')
+                ->addActionContext('archive-info'                  , 'json')
                 ->initContext();
     }
 
@@ -66,6 +67,65 @@ class ApiController extends Zend_Controller_Action
     {
         $this->_helper->json->sendJson( array(
             "version" => Application_Model_Preference::GetAirtimeVersion()));
+    }
+
+    public function archiveInfoAction()
+    {
+      $this->view->layout()->disableLayout();
+      $this->_helper->viewRenderer->setNoRender(true);
+
+       $files = Application_Model_StoredFile::listAllRecordedFiles();
+       
+       $entries = array();
+
+       foreach ( $files as $item )
+       {
+           $show_time = strtotime($item['show_time']);
+           $title = $item['show_name'] . ' - ' . date('Y-m-d', $show_time);
+           $entry = array(
+                            'title'  =>	$title,
+                            'description' => $item['show_description'],
+                            'link'	=> $item['file_url'],
+                            'guid'      => $item['file_id'],
+                            'lastUpdate' => $show_time
+                         );
+           $entries[] = $entry;
+       }
+
+       $feedData = array(
+                         'title'   =>   'FutureMusic.fm Show Archives',
+                         'description' => 'FutureMusic.fm Show Archives',
+                         'link'    =>   'http://futuremusic.fm',
+                         'charset' =>   'utf-8',
+                         'entries' =>  $entries 
+                        );
+       $feed = Zend_Feed::importArray ( $feedData, 'rss' );
+       $feed->send();
+       // $this->_helper->json->sendJson($files);
+    }
+
+    /**
+     * Sets up and send init values used in the Calendar.
+     * This is only being used by schedule.js at the moment.
+     */
+    public function calendarInitAction()
+    {
+        if (is_null(Zend_Auth::getInstance()->getStorage()->read())) {
+            header('HTTP/1.0 401 Unauthorized');
+            print _('You are not allowed to access this resource.');
+
+            return;
+        }
+
+        $this->view->calendarInit = array(
+            "timestamp"      => time(),
+            "timezoneOffset" => date("Z"),
+            "timeScale"      => Application_Model_Preference::GetCalendarTimeScale(),
+            "timeInterval"   => Application_Model_Preference::GetCalendarTimeInterval(),
+            "weekStartDay"   => Application_Model_Preference::GetWeekStartDay()
+        );
+
+        $this->_helper->json->sendJson(array());
     }
 
     /**
@@ -185,7 +245,6 @@ class ApiController extends Zend_Controller_Action
         }
     }
 
-    //Used by the SaaS monitoring
     public function onAirLightAction()
     {
         $this->view->layout()->disableLayout();
@@ -244,8 +303,9 @@ class ApiController extends Zend_Controller_Action
             // disable the view and the layout
             $this->view->layout()->disableLayout();
             $this->_helper->viewRenderer->setNoRender(true);
-            
-            $utcTimeNow = gmdate("Y-m-d H:i:s");
+
+            $date = new Application_Common_DateHelper;
+            $utcTimeNow = $date->getUtcTimestamp();
             $utcTimeEnd = "";   // if empty, getNextShows will use interval instead of end of day
 
             $request = $this->getRequest();
@@ -260,48 +320,44 @@ class ApiController extends Zend_Controller_Action
                 }
 
                 // make getNextShows use end of day
-                $end = Application_Common_DateHelper::getTodayStationEndDateTime();
-                $end->setTimezone(new DateTimeZone("UTC"));
-                $utcTimeEnd = $end->format("Y-m-d H:i:s");
-                $result = array(
-					"env" => APPLICATION_ENV,
-                    "schedulerTime" => $utcTimeNow,
-                    "currentShow" => Application_Model_Show::getCurrentShow($utcTimeNow),
-                    "nextShow" => Application_Model_Show::getNextShows($utcTimeNow, $limit, $utcTimeEnd)
-                );
-            }
-            else {
+                $utcTimeEnd = Application_Common_DateHelper::GetDayEndTimestampInUtc();
+                $result = array("env"=>APPLICATION_ENV,
+                                "schedulerTime"=>gmdate("Y-m-d H:i:s"),
+                                "currentShow"=>Application_Model_Show::getCurrentShow($utcTimeNow),
+                                "nextShow"=>Application_Model_Show::getNextShows($utcTimeNow, $limit, $utcTimeEnd)
+                            );
+                // XSS exploit prevention
+                foreach ($result["currentShow"] as &$current) {
+                    $current["name"] = htmlspecialchars($current["name"]);
+                }
+                foreach ($result["nextShow"] as &$next) {
+                    $next["name"] = htmlspecialchars($next["name"]);
+                }
+                
+                Application_Model_Show::convertToLocalTimeZone($result["currentShow"],
+                        array("starts", "ends", "start_timestamp", "end_timestamp"));
+                Application_Model_Show::convertToLocalTimeZone($result["nextShow"],
+                        array("starts", "ends", "start_timestamp", "end_timestamp"));
+            } else {
                 $result = Application_Model_Schedule::GetPlayOrderRange();
 
                 // XSS exploit prevention
                 $result["previous"]["name"] = htmlspecialchars($result["previous"]["name"]);
                 $result["current"]["name"] = htmlspecialchars($result["current"]["name"]);
-                $result["next"]["name"] = htmlspecialchars($result["next"]["name"]);        
+                $result["next"]["name"] = htmlspecialchars($result["next"]["name"]);
+                foreach ($result["currentShow"] as &$current) {
+                    $current["name"] = htmlspecialchars($current["name"]);
+                }
+                foreach ($result["nextShow"] as &$next) {
+                    $next["name"] = htmlspecialchars($next["name"]);
+                }
+
+                //Convert from UTC to localtime for Web Browser.
+                Application_Model_Show::ConvertToLocalTimeZone($result["currentShow"],
+                        array("starts", "ends", "start_timestamp", "end_timestamp"));
+                Application_Model_Show::ConvertToLocalTimeZone($result["nextShow"],
+                        array("starts", "ends", "start_timestamp", "end_timestamp"));
             }
-            
-            // XSS exploit prevention
-            foreach ($result["currentShow"] as &$current) {
-            	$current["name"] = htmlspecialchars($current["name"]);
-            }
-            foreach ($result["nextShow"] as &$next) {
-            	$next["name"] = htmlspecialchars($next["name"]);
-            }
-            
-            //For consistency, all times here are being sent in the station timezone, which
-            //seems to be what we've normalized everything to.
-            
-            //Convert the UTC scheduler time ("now") to the station timezone.
-            $result["schedulerTime"] = Application_Common_DateHelper::UTCStringToStationTimezoneString($result["schedulerTime"]);
-            $result["timezone"] = Application_Common_DateHelper::getStationTimezoneAbbreviation();
-            $result["timezoneOffset"] = Application_Common_DateHelper::getStationTimezoneOffset();
-            
-            //Convert from UTC to station time for Web Browser.
-            Application_Common_DateHelper::convertTimestamps($result["currentShow"],
-            		array("starts", "ends", "start_timestamp", "end_timestamp"),
-            		"station");
-            Application_Common_DateHelper::convertTimestamps($result["nextShow"],
-            		array("starts", "ends", "start_timestamp", "end_timestamp"),
-            		"station");
 
             //used by caller to determine if the airtime they are running or widgets in use is out of date.
             $result['AIRTIME_API_VERSION'] = AIRTIME_API_VERSION;
@@ -323,37 +379,23 @@ class ApiController extends Zend_Controller_Action
             $this->view->layout()->disableLayout();
             $this->_helper->viewRenderer->setNoRender(true);
 
-            //weekStart is in station time.
-            $weekStartDateTime = Application_Common_DateHelper::getWeekStartDateTime();
-            
+            $date = new Application_Common_DateHelper;
+            $dayStart = $date->getWeekStartDate();
+            $utcDayStart = Application_Common_DateHelper::ConvertToUtcDateTimeString($dayStart);
+
             $dow = array("monday", "tuesday", "wednesday", "thursday", "friday",
 						"saturday", "sunday", "nextmonday", "nexttuesday", "nextwednesday",
 						"nextthursday", "nextfriday", "nextsaturday", "nextsunday");
 
             $result = array();
-            $utcTimezone = new DateTimeZone("UTC");
-            $stationTimezone = new DateTimeZone(Application_Model_Preference::GetDefaultTimezone());
-
-            $weekStartDateTime->setTimezone($utcTimezone);
-            $utcDayStart = $weekStartDateTime->format("Y-m-d H:i:s");
-            for ($i = 0; $i < 14; $i++) {
-            	
-            	//have to be in station timezone when adding 1 day for daylight savings.
-            	$weekStartDateTime->setTimezone($stationTimezone);
-            	$weekStartDateTime->add(new DateInterval('P1D'));
-            	
-            	//convert back to UTC to get the actual timestamp used for search.
-            	$weekStartDateTime->setTimezone($utcTimezone);
-            	
-                $utcDayEnd = $weekStartDateTime->format("Y-m-d H:i:s");
+            for ($i=0; $i<14; $i++) {
+                $utcDayEnd = Application_Common_DateHelper::GetDayEndTimestamp($utcDayStart);
                 $shows = Application_Model_Show::getNextShows($utcDayStart, "ALL", $utcDayEnd);
                 $utcDayStart = $utcDayEnd;
-                
-                Application_Common_DateHelper::convertTimestamps(
-                	$shows,
-                    array("starts", "ends", "start_timestamp","end_timestamp"),
-                	"station"
-                );
+
+                Application_Model_Show::convertToLocalTimeZone($shows,
+                    array("starts", "ends", "start_timestamp",
+                    "end_timestamp"));
 
                 $result[$dow[$i]] = $shows;
             }
@@ -395,13 +437,13 @@ class ApiController extends Zend_Controller_Action
         $media_id = $this->_getParam("media_id");
         Logging::debug("Received notification of new media item start: $media_id");
         Application_Model_Schedule::UpdateMediaPlayedStatus($media_id);
+        
+        $historyService = new Application_Service_HistoryService();
+        $historyService->insertPlayedItem($media_id);
 
+        //set a 'last played' timestamp for media item
+        //needed for smart blocks
         try {
-            $historyService = new Application_Service_HistoryService();
-            $historyService->insertPlayedItem($media_id);
-
-            //set a 'last played' timestamp for media item
-            //needed for smart blocks
             $mediaType = Application_Model_Schedule::GetType($media_id);
             if ($mediaType == 'file') {
                 $file_id = Application_Model_Schedule::GetFileId($media_id);
@@ -429,22 +471,23 @@ class ApiController extends Zend_Controller_Action
 
     public function recordedShowsAction()
     {
-        $utcTimezone = new DateTimeZone("UTC");
-        $nowDateTime = new DateTime("now", $utcTimezone);
-        $endDateTime = clone $nowDateTime;
-        $endDateTime = $endDateTime->add(new DateInterval("PT2H"));
+        $today_timestamp = date("Y-m-d H:i:s");
+        $now             = new DateTime($today_timestamp);
+        $end_timestamp   = $now->add(new DateInterval("PT2H"));
+        $end_timestamp   = $end_timestamp->format("Y-m-d H:i:s");
 
         $this->view->shows =
             Application_Model_Show::getShows(
-                $nowDateTime,
-                $endDateTime,
+                Application_Common_DateHelper::ConvertToUtcDateTime($today_timestamp, date_default_timezone_get()),
+                Application_Common_DateHelper::ConvertToUtcDateTime($end_timestamp, date_default_timezone_get()),
                 $onlyRecord = true);
 
         $this->view->is_recording = false;
-        $this->view->server_timezone = Application_Model_Preference::GetDefaultTimezone();
+        $this->view->server_timezone = Application_Model_Preference::GetTimezone();
 
-        $rows = Application_Model_Show::getCurrentShow();
-        
+        $rows = Application_Model_Show::getCurrentShow($today_timestamp);
+        Application_Model_Show::convertToLocalTimeZone($rows, array("starts", "ends", "start_timestamp", "end_timestamp"));
+
         if (count($rows) > 0) {
             $this->view->is_recording = ($rows[0]['record'] == 1);
         }
@@ -487,8 +530,9 @@ class ApiController extends Zend_Controller_Action
         try {
             $show_inst = new Application_Model_ShowInstance($show_instance_id);
             $show_inst->setRecordedFile($file_id);
-        } 
-        catch (Exception $e) {
+            //$show_start_time = Application_Common_DateHelper::ConvertToLocalDateTimeString($show_inst->getShowInstanceStart());
+
+        } catch (Exception $e) {
             //we've reached here probably because the show was
             //cancelled, and therefore the show instance does not exist
             //anymore (ShowInstance constructor threw this error). We've

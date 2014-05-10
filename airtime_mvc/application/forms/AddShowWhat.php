@@ -75,14 +75,4 @@ class Application_Form_AddShowWhat extends Zend_Form_SubForm
             }
         }
     }
-
-    public function makeReadonly()
-    {
-        $elements = $this->getElements();
-        foreach ($elements as $element) {
-            if ($element->getType() != 'Zend_Form_Element_Hidden') {
-                $element->setAttrib('readonly','readonly');
-            }
-        }
-    }
 }

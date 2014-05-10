@@ -105,7 +105,12 @@
     <fieldset class="padded">
     <legend><?php echo _("Output Stream Settings") ?></legend>
     <?php
+        if ( $this->num_stream == 0 )
+        {
+           echo "Don't appear to have any streams";
+        }
         for($i=1;$i<=$this->num_stream;$i++){
+            echo "Got a stream";
             echo $this->form->getSubform("s".$i."_subform");
         }
     ?>

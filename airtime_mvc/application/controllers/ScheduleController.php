@@ -51,7 +51,7 @@ class ScheduleController extends Zend_Controller_Action
             "var calendarPref = {};\n".
             "calendarPref.weekStart = ".Application_Model_Preference::GetWeekStartDay().";\n".
             "calendarPref.timestamp = ".time().";\n".
-            "calendarPref.timezoneOffset = ".Application_Common_DateHelper::getUserTimezoneOffset().";\n".
+            "calendarPref.timezoneOffset = ".date("Z").";\n".
             "calendarPref.timeScale = '".Application_Model_Preference::GetCalendarTimeScale()."';\n".
             "calendarPref.timeInterval = ".Application_Model_Preference::GetCalendarTimeInterval().";\n".
             "calendarPref.weekStartDay = ".Application_Model_Preference::GetWeekStartDay().";\n".
@@ -61,8 +61,7 @@ class ScheduleController extends Zend_Controller_Action
         $this->view->headScript()->appendFile($baseUrl.'js/contextmenu/jquery.contextMenu.js?'.$CC_CONFIG['airtime_version'],'text/javascript');
 
         //full-calendar-functions.js requires this variable, so that datePicker widget can be offset to server time instead of client time
-        //this should be as a default, however with our new drop down timezone changing for shows, we should reset this offset then??
-        $this->view->headScript()->appendScript("var timezoneOffset = ".Application_Common_DateHelper::getStationTimezoneOffset()."; //in seconds");
+        $this->view->headScript()->appendScript("var timezoneOffset = ".date("Z")."; //in seconds");
         //set offset to ensure it loads last
         $this->view->headScript()->offsetSetFile(90, $baseUrl.'js/airtime/schedule/full-calendar-functions.js?'.$CC_CONFIG['airtime_version'],'text/javascript');
 
@@ -116,11 +115,9 @@ class ScheduleController extends Zend_Controller_Action
         $service_user = new Application_Service_UserService();
         $currentUser = $service_user->getCurrentUser();
 
-        $userTimezone = new DateTimeZone(Application_Model_Preference::GetUserTimezone());
-        
-        $start = new DateTime($this->_getParam('start', null), $userTimezone);
+        $start = new DateTime($this->_getParam('start', null));
         $start->setTimezone(new DateTimeZone("UTC"));
-        $end = new DateTime($this->_getParam('end', null), $userTimezone);
+        $end = new DateTime($this->_getParam('end', null));
         $end->setTimezone(new DateTimeZone("UTC"));
 
         $events = &Application_Model_Show::getFullCalendarEvents($start, $end,
@@ -186,7 +183,6 @@ class ScheduleController extends Zend_Controller_Action
         $deltaDay = $this->_getParam('day');
         $deltaMin = $this->_getParam('min');
         $showId = $this->_getParam('showId');
-        $instanceId = $this->_getParam('instanceId');
 
         $userInfo = Zend_Auth::getInstance()->getStorage()->read();
         $user = new Application_Model_User($userInfo->id);
@@ -199,7 +195,7 @@ class ScheduleController extends Zend_Controller_Action
 
                 return false;
             }
-            $error = $show->resizeShow($deltaDay, $deltaMin, $instanceId);
+            $error = $show->resizeShow($deltaDay, $deltaMin);
         }
 
         if (isset($error)) {
@@ -265,36 +261,22 @@ class ScheduleController extends Zend_Controller_Action
         $show = Application_Model_Show::getCurrentShow();
 
         /* Convert all UTC times to localtime before sending back to user. */
-        $range["schedulerTime"] = Application_Common_DateHelper::UTCStringToUserTimezoneString($range["schedulerTime"]);
-        
         if (isset($range["previous"])) {
-            $range["previous"]["starts"] = Application_Common_DateHelper::UTCStringToUserTimezoneString($range["previous"]["starts"]);
-            $range["previous"]["ends"] = Application_Common_DateHelper::UTCStringToUserTimezoneString($range["previous"]["ends"]);
+            $range["previous"]["starts"] = Application_Common_DateHelper::ConvertToLocalDateTimeString($range["previous"]["starts"]);
+            $range["previous"]["ends"] = Application_Common_DateHelper::ConvertToLocalDateTimeString($range["previous"]["ends"]);
         }
         if (isset($range["current"])) {
-            $range["current"]["starts"] = Application_Common_DateHelper::UTCStringToUserTimezoneString($range["current"]["starts"]);
-            $range["current"]["ends"] = Application_Common_DateHelper::UTCStringToUserTimezoneString($range["current"]["ends"]);
+            $range["current"]["starts"] = Application_Common_DateHelper::ConvertToLocalDateTimeString($range["current"]["starts"]);
+            $range["current"]["ends"] = Application_Common_DateHelper::ConvertToLocalDateTimeString($range["current"]["ends"]);
         }
         if (isset($range["next"])) {
-            $range["next"]["starts"] = Application_Common_DateHelper::UTCStringToUserTimezoneString($range["next"]["starts"]);
-            $range["next"]["ends"] = Application_Common_DateHelper::UTCStringToUserTimezoneString($range["next"]["ends"]);
+            $range["next"]["starts"] = Application_Common_DateHelper::ConvertToLocalDateTimeString($range["next"]["starts"]);
+            $range["next"]["ends"] = Application_Common_DateHelper::ConvertToLocalDateTimeString($range["next"]["ends"]);
         }
-  
-        Application_Common_DateHelper::convertTimestamps(
-        	$range["currentShow"], 
-        	array("starts", "ends", "start_timestamp", "end_timestamp"),
-        	"user"
-        );
-        Application_Common_DateHelper::convertTimestamps(
-        	$range["nextShow"], 
-        	array("starts", "ends", "start_timestamp", "end_timestamp"),
-        	"user"
-        );
 
-        //TODO: Add timezone and timezoneOffset back into the ApiController's results.
-        $range["timezone"] = Application_Common_DateHelper::getUserTimezoneAbbreviation();
-        $range["timezoneOffset"] = Application_Common_DateHelper::getUserTimezoneOffset();
-        
+        Application_Model_Show::convertToLocalTimeZone($range["currentShow"], array("starts", "ends", "start_timestamp", "end_timestamp"));
+        Application_Model_Show::convertToLocalTimeZone($range["nextShow"], array("starts", "ends", "start_timestamp", "end_timestamp"));
+
         $source_status = array();
         $switch_status = array();
         $live_dj = Application_Model_Preference::GetSourceStatus("live_dj");
@@ -342,10 +324,9 @@ class ScheduleController extends Zend_Controller_Action
             $originalShowStart = $originalShow->getShowInstanceStart();
 
             //convert from UTC to user's timezone for display.
-            $displayTimeZone = new DateTimeZone(Application_Model_Preference::GetTimezone());
             $originalDateTime = new DateTime($originalShowStart, new DateTimeZone("UTC"));
-            $originalDateTime->setTimezone($displayTimeZone);
-            
+            $originalDateTime->setTimezone(new DateTimeZone(date_default_timezone_get()));
+            //$timestamp  = Application_Common_DateHelper::ConvertToLocalDateTimeString($originalDateTime->format("Y-m-d H:i:s"));
             $this->view->additionalShowInfo =
                 sprintf(_("Rebroadcast of show %s from %s at %s"),
                     $originalShowName,
@@ -437,7 +418,7 @@ class ScheduleController extends Zend_Controller_Action
         if ($service_showForm->validateShowForms($forms, $data, $validateStartDate,
                 $originalShowStartDateTime, true, $data["add_show_instance_id"])) {
 
-            $service_show->editRepeatingShowInstance($data);
+            $service_show->createShowFromRepeatingInstance($data);
 
             $this->view->addNewShow = true;
             $this->view->newForm = $this->view->render('schedule/add-show-form.phtml');
@@ -450,7 +431,7 @@ class ScheduleController extends Zend_Controller_Action
             }
             $this->view->rr->getElement('add_show_record')->setOptions(array('disabled' => true));
             $this->view->addNewShow = false;
-            $this->view->action = "edit-repeating-show-instance";
+            $this->view->action = "edit-show";
             $this->view->form = $this->view->render('schedule/add-show-form.phtml');
         }
     }
@@ -647,12 +628,9 @@ class ScheduleController extends Zend_Controller_Action
 
     public function calculateDurationAction()
     {
-    	$start = $this->_getParam('startTime');
-    	$end = $this->_getParam('endTime');
-    	$timezone = $this->_getParam('timezone');
-    	
         $service_showForm = new Application_Service_ShowFormService();
-        $result = $service_showForm->calculateDuration($start, $end, $timezone);
+        $result = $service_showForm->calculateDuration($this->_getParam('startTime'),
+            $this->_getParam('endTime'));
 
         echo Zend_Json::encode($result);
         exit();
