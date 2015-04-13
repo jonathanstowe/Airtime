@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<config>
+<?xml version="1.0" encoding="utf-8"?><config>
   <propel>
     <datasources default="airtime">
       <datasource id="airtime">

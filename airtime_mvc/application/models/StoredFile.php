@@ -1295,7 +1295,7 @@ SQL;
         }
     }
 
-    public function uploadToMixcloud()
+public function uploadToMixcloud()
     {
         $CC_CONFIG = Config::getConfig();
 
@@ -1306,11 +1306,74 @@ SQL;
 
         if (Application_Model_Preference::GetUploadToMixcloudOption()) {
             $filepath = $this->getFilePath();
-            $name = $this->getName();
-            $access_token = Application_Model_Preference::GetMixcloudToken();
+            $title = $file->getDbTrackTitle();
+            $id = $this->getId();
 
+            $sql = <<<SQL
+SELECT description FROM cc_show
+WHERE id IN (SELECT show_id FROM cc_show_instances
+    WHERE file_id = $id)
+SQL;
+
+            $description = '';
+            $rows = Application_Common_Database::prepareAndExecute($sql);
+            if (isset ($row['0']['description'])) {
+                $description = $rows['0']['description'];
+            }
+
+            if (preg_match('/.+(\d{4})-(\d{2})-(\d{2})-(\d{2}):(\d{2}):(\d{2})/',$title, $matches)) {
+                $title = preg_replace('/-(\d{4})-(\d{2})-(\d{2})-(\d{2}):(\d{2}):(\d{2})/','',$title);
+                $date = new DateTime(implode("/",(array_slice($matches, 1,3))));
+                $sql = <<<SQL
+SELECT starts,ends FROM cc_show_instances
+WHERE file_id = $id;
+SQL;
+                $googleDate = Application_Common_Database::prepareAndExecute($sql);
+                $googleDateStart = str_replace(' ', 'T', $googleDate['0']["starts"]);
+                $googleDateEnd = str_replace(' ', 'T', $googleDate['0']["ends"]);
+                $url="http://www.google.com/calendar/feeds/schedule@resonancefm.com/public/basic?singleEvents=True&sortorder=ascending&start-min=" . $googleDateStart . "&start-max=" . $googleDateEnd . "&alt=json";
+                $json=json_decode(file_get_contents($url), true);
+                $description=($json['feed']['entry']['0']['summary']['$t']);
+                $description=strip_tags($description);
+                list($part1, $part2)=explode('Event Description: ', $description);
+                $description=preg_replace('/\[.*\]/', '', $part2);
+                if ( ! isset($description)) {
+                    $description = '';
+                }
+
+                $name = "$title - " . $date->format('jS F Y');
+            } else {
+                $name = $title;
+            }
+
+            // $fileType = $this->getFileExtension($id);
+
+            // if ($fileType == 'mp3') {
+            //     $ident = "/home/james/ident.mp3";
+            //     $filepath = str_replace(' ', '\ ', $filepath);
+            //     exec("mp3wrap /tmp/upload.mp3 /home/james/ident.mp3 " . $filepath . " /home/james/ident.mp3");
+            //     $filepath = "/tmp/upload" . "_MP3WRAP.mp3";
+            // }  
+
+            $picture = "/home/james/Mixcloud/images/" . $title . ".jpg";
+
+            if (!file_exists($picture)) {
+                $picture = "/home/james/Mixcloud/images/default.jpg";
+            }
+
+            $access_token = Application_Model_Preference::GetMixcloudToken();
             $url = "https://api.mixcloud.com/upload/?access_token=" . $access_token;
+            
+            $mixcloud_tags = explode(',', Application_Model_Preference::GetMixcloudTags());
+            $mixcloud_tags = array_map('trim', $mixcloud_tags);
+
+            foreach ($mixcloud_tags as $key => $value) {
+                $post_data["tags-$key-tag"] = $mixcloud_tags[$key];
+            }
+
             $post_data['name'] = "$name";
+            $post_data['description'] = "$description";
+            $post_data['picture'] = "@" . "$picture";
             $post_data['mp3'] = "@" . "$filepath";
 
             $ch = curl_init();
@@ -1326,9 +1389,12 @@ SQL;
             // Just for debug: to see response
             echo "$response\n";
             curl_close ($ch);
+
+            // if ($fileType == 'mp3') {
+            //     exec("rm /tmp/upload_MP3WRAP.mp3");
+            // }
         }
     }
-
 
     public static function setIsPlaylist($p_playlistItems, $p_type, $p_status) {
         foreach ($p_playlistItems as $item) {

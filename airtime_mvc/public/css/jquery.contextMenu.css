@@ -100,6 +100,7 @@
 .context-menu-item.icon-delete { background-image: url(images/icon_delete_cm.png); }
 .context-menu-item.icon-quit { background-image: url(images/icon_door_cm.png); }
 .context-menu-item.icon-soundcloud { background-image: url(images/icon_soundcloud_cm.png); }
+.context-menu-item.icon-mixcloud { background-image: url(images/icon_mixcloud_cm.png); }
 
 .context-menu-item.icon-download { background-image: url(images/icon_download_cm.png); }
 .context-menu-item.icon-overview { background-image: url(images/icon_overview_cm.png); }

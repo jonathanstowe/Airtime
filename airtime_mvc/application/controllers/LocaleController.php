@@ -37,7 +37,7 @@ class LocaleController extends Zend_Controller_Action
             "Current" => _("Current"),
             //dashboard/versiontooltip.js
             "You are running the latest version" => _("You are running the latest version"),
-            "New version available: " => _("New version available: "),
+            "New version available: " => _("New version available, but this customised one is better than "),
             "This version will soon be obsolete." => _("This version will soon be obsolete."),
             "This version is no longer supported." => _("This version is no longer supported."),
             "Please upgrade to " => _("Please upgrade to "),

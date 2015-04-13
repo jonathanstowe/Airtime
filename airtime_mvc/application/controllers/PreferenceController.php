@@ -73,8 +73,7 @@ class PreferenceController extends Zend_Controller_Action
 
                 Application_Model_Preference::SetAutoUploadRecordedShowToMixcloud($values["UseMixcloud"]);
                 Application_Model_Preference::SetUploadToMixcloudOption($values["UploadToMixcloudOption"]);
-                Application_Model_Preference::SetMixcloudUser($values["MixcloudUser"]);
-                Application_Model_Preference::SetMixcloudPassword($values["MixcloudPassword"]);
+                Application_Model_Preference::SetMixcloudTags($values["MixcloudTags"]);
                 Application_Model_Preference::SetMixcloudToken($values["MixcloudToken"]);
 
                 $this->view->statusMsg = "<div class='success'>". _("Preferences updated.")."</div>";

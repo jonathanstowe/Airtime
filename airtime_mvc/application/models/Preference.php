@@ -414,25 +414,14 @@ class Application_Model_Preference
         return self::getValue("mixcloud_auto_upload_recorded_show");
     }
 
-    public static function SetMixcloudUser($user)
+    public static function SetMixcloudTags($tags)
     {
-        self::setValue("mixcloud_user", $user);
+        self::setValue("mixcloud_tags", $tags);
     }
 
-    public static function GetMixcloudUser()
+    public static function GetMixcloudTags()
     {
-        return self::getValue("mixcloud_user");
-    }
-
-    public static function SetMixcloudPassword($password)
-    {
-        if (strlen($password) > 0)
-            self::setValue("mixcloud_password", $password);
-    }
-
-    public static function GetMixcloudPassword()
-    {
-        return self::getValue("mixcloud_password");
+        return self::getValue("mixcloud_tags");
     }
 
     public static function SetMixcloudToken($token)
@@ -702,6 +691,12 @@ class Application_Model_Preference
             $outputArray['NUM_SOUNDCLOUD_TRACKS_UPLOADED'] = Application_Model_StoredFile::getSoundCloudUploads();
         } else {
             $outputArray['NUM_SOUNDCLOUD_TRACKS_UPLOADED'] = NULL;
+        }
+        $outputArray['MIXCLOUD_ENABLED'] = self::GetUploadToMixcloudOption();
+        if ($outputArray['MIXCLOUD_ENABLED']) {
+            $outputArray['NUM_MIXCLOUD_TRACKS_UPLOADED'] = Application_Model_StoredFile::getMixcloudUploads();
+        } else {
+            $outputArray['NUM_MIXCLOUD_TRACKS_UPLOADED'] = NULL;
         }
 
         $outputArray['STATION_NAME'] = self::GetStationName();

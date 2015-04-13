@@ -31,45 +31,15 @@ class Application_Form_MixcloudPreferences extends Zend_Form_SubForm
             )
         ));
 
-        //Mixcloud Username
-        $this->addElement('text', 'MixcloudUser', array(
-            'class'      => 'input_text',
-            'label'      => _('Mixcloud Email'),
-            'filters'    => array('StringTrim'),
-            'autocomplete' => 'off',
-            'value' => Application_Model_Preference::GetMixcloudUser(),
+        // Add the tags element
+        $this->addElement('textarea', 'MixcloudTags', array(
+            'label'      => _('Mixcloud Tags: (separate tags with commas)'),
+            'required'   => false,
+            'class'      => 'input_text_area',
+            'value' => Application_Model_Preference::GetMixcloudTags(),
             'decorators' => array(
                 'ViewHelper'
-            ),
-
-            // By default, 'allowEmpty' is true. This means that our custom
-            // validators are going to be skipped if this field is empty,
-            // which is something we don't want
-            'allowEmpty' => false,
-            'validators' => array(
-                new ConditionalNotEmpty(array('UploadToMixcloudOption'=>'1'))
             )
-        ));
-
-        //Mixcloud Password
-        $this->addElement('password', 'MixcloudPassword', array(
-            'class'      => 'input_text',
-            'label'      => _('Mixcloud Password'),
-            'filters'    => array('StringTrim'),
-            'autocomplete' => 'off',
-            'value' => Application_Model_Preference::GetMixcloudPassword(),
-            'decorators' => array(
-                'ViewHelper'
-            ),
-
-            // By default, 'allowEmpty' is true. This means that our custom
-            // validators are going to be skipped if this field is empty,
-            // which is something we don't want
-            'allowEmpty' => false,
-            'validators' => array(
-                new ConditionalNotEmpty(array('UploadToMixcloudOption'=>'1'))
-            ),
-            'renderPassword' => true
         ));
 
         //Mixcloud Token

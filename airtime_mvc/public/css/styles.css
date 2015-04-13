@@ -1980,6 +1980,16 @@ span.errors.sp-errors{
 	width:21px;
     margin-top: 0px !important;
 }
+.small-icon.mixcloud {
+	background:url(images/icon_mixcloud.png) no-repeat 0 0;
+	width:21px;
+    margin-top: 0px !important;
+}
+.small-icon.mc-error {
+	background:url(images/icon_mixcloud_error2.png) no-repeat 0 0;
+	width:21px;
+    margin-top: 0px !important;
+}
 .small-icon.now-playing {
     background:url(images/icon_play_cal.png) no-repeat 0 0;
     height:10px;
@@ -2030,6 +2040,10 @@ span.errors.sp-errors{
 }
 .medium-icon.soundcloud {
 	background:url(images/icon_soundcloud_m.png) no-repeat 0 0;
+	width:21px;
+}
+.medium-icon.mixcloud {
+	background:url(images/icon_mixcloud_m.png) no-repeat 0 0;
 	width:21px;
 }
 .medium-icon.nowplaying, .medium-icon.finishedplaying {

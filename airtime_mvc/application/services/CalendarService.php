@@ -72,6 +72,23 @@ class Application_Service_CalendarService
                         "name"=> $text,
                         "icon" => "soundcloud");
                 }
+
+                if (Application_Model_Preference::GetUploadToMixcloudOption()) {
+                    // $scid = $ccFile->getDbSoundcloudId();
+
+                    // if ($scid > 0) {
+                    //     $menu["soundcloud_view"] = array(
+                    //         "name" => _("View on Soundcloud"),
+                    //         "icon" => "soundcloud",
+                    //         "url" => $ccFile->getDbSoundcloudLinkToFile());
+                    // }
+
+                    $text = _('Upload to Mixcloud');
+                    $menu["mixcloud_upload"] = array(
+                        "name"=> $text,
+                        "icon" => "mixcloud");
+                }
+
             } else {
                 $menu["content"] = array(
                     "name"=> _("Show Content"),

@@ -18,8 +18,8 @@ $CC_CONFIG['dsn']['hostspec'] = $values['database']['host'];
 $CC_CONFIG['dsn']['phptype'] = 'pgsql';
 $CC_CONFIG['dsn']['database'] = $values['database']['dbname'];
 
-$CC_CONFIG['soundcloud-connection-retries'] = $values['soundcloud']['connection_retries'];
-$CC_CONFIG['soundcloud-connection-wait'] = $values['soundcloud']['time_between_retries'];
+// $CC_CONFIG['mixcloud-connection-retries'] = $values['mixcloud']['connection_retries'];
+// $CC_CONFIG['mixcloud-connection-wait'] = $values['mixcloud']['time_between_retries'];
 
 require_once($CC_CONFIG['phpDir'].'/application/configs/constants.php');
 require_once($CC_CONFIG['phpDir'].'/application/configs/conf.php');
