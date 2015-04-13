@@ -2123,6 +2123,10 @@ dd.radio-inline-list, .preferences dd.radio-inline-list, .stream-config dd.radio
     height: 120px;
 }
 
+.preferences dd#MixcloudTags-element.block-display .input_text_area {
+    height: 120px;
+}
+
 #show_time_info {
 	font-size:12px;
 	height:30px;
