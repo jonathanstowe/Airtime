@@ -1157,6 +1157,34 @@ function checkLibrarySCUploadStatus(){
     $("#library_display span.progress").each(checkSCUploadStatusRequest);
     setTimeout(checkLibrarySCUploadStatus, 5000);
 }
+
+function checkLibraryMCUploadStatus(){
+    var url = baseUrl+'Library/get-upload-to-mixcloud-status',
+        span,
+        id;
+    
+    function checkMCUploadStatusCallback(json) {
+        
+        if (json.mc_id > 0) {
+            span.removeClass("progress").addClass("mixcloud");
+            
+        }
+        else if (json.mc_id == "-3") {
+            span.removeClass("progress").addClass("mc-error");
+        }
+    }
+    
+    function checkMCUploadStatusRequest() {
+        
+        span = $(this);
+        id = span.parents("tr").data("aData").id;
+       
+        $.post(url, {format: "json", id: id, type:"file"}, checkMCUploadStatusCallback);
+    }
+    
+    $("#library_display span.progress").each(checkMCUploadStatusRequest);
+    setTimeout(checkLibraryMCUploadStatus, 5000);
+}
     
 function addQtipToSCIcons() {
     $("#content")

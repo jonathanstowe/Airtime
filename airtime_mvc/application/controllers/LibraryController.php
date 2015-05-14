@@ -17,7 +17,9 @@ class LibraryController extends Zend_Controller_Action
                     ->addActionContext('context-menu', 'json')
                     ->addActionContext('get-file-metadata', 'html')
                     ->addActionContext('upload-file-soundcloud', 'json')
+                    ->addActionContext('upload-file-mixcloud', 'json')
                     ->addActionContext('get-upload-to-soundcloud-status', 'json')
+                    ->addActionContext('get-upload-to-mixcloud-status', 'json')
                     ->addActionContext('set-num-entries', 'json')
                     ->addActionContext('edit-file-md', 'json')
                     ->initContext();
@@ -291,6 +293,20 @@ class LibraryController extends Zend_Controller_Action
             $menu["soundcloud"]["items"]["upload"] = array("name" => $text, "icon" => "soundcloud", "url" => $baseUrl."library/upload-file-soundcloud/id/{$id}");
         }
 
+        //MIXCLOUD MENU OPTIONS
+        if ($type === "audioclip" && Application_Model_Preference::GetUploadToMixcloudOption()) {
+
+            //create a menu separator
+            $menu["sep2"] = "-----------";
+
+            //create a sub menu for Mixcloud actions.
+            $menu["mixcloud"] = array("name" => _("Mixcloud"), "icon" => "mixcloud", "items" => array());
+            
+            $text = _("Upload to Mixcloud");
+            
+            $menu["mixcloud"]["items"]["upload"] = array("name" => $text, "icon" => "mixcloud", "url" => $baseUrl."library/upload-file-mixcloud/id/{$id}");
+        }
+
         if (empty($menu)) {
             $menu["noaction"] = array("name"=>_("No action available"));
         }
@@ -545,7 +561,15 @@ class LibraryController extends Zend_Controller_Action
     public function uploadFileSoundcloudAction()
     {
         $id = $this->_getParam('id');
-        Application_Model_Soundcloud::uploadSoundcloud($id);
+        Application_Model_Mixcloud::uploadMixcloud($id);
+        // we should die with ui info
+        $this->_helper->json->sendJson(null); 
+    }
+    
+    public function uploadFileMixcloudAction()
+    {
+        $id = $this->_getParam('id');
+        Application_Model_Mixcloud::uploadMixcloud($id);
         // we should die with ui info
         $this->_helper->json->sendJson(null);
     }

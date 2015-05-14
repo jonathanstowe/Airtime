@@ -59,6 +59,16 @@ class Application_Form_AddShowWhat extends Zend_Form_SubForm
 
         $descText = $this->getElement('add_show_description');
 
+         // Add the picture element
+        // $this->addElement('text', 'add_show_picture', array(
+        //     'label'      => _('Picture:'),
+        //     'required'   => false,
+        //     'class'      => 'input_text',
+        //     'validators' => array(array('StringLength', false, array(0, $maxLens['description'])))
+        // ));
+
+        // $descText = $this->getElement('add_show_picture');
+
         $descText->setDecorators(array(array('ViewScript', array(
             'viewScript' => 'form/add-show-block.phtml',
             'class'      => 'block-display'
