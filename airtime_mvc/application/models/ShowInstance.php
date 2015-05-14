@@ -728,7 +728,7 @@ SQL;
 
     }
 
-    public function getShowListContent()
+    public function getShowListContent($timezone = null)
     {
         $con = Propel::getConnection();
 
@@ -779,6 +779,15 @@ SQL;
             ':instance_id2' => $this->_instanceId
         ));
         $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+       
+        if (isset($timezone)) {
+            $displayTimezone = new DateTimeZone($timezone);
+        } else { 
+            $userTimezone = Application_Model_Preference::GetUserTimezone();
+            $displayTimezone = new DateTimeZone($userTimezone);
+        }
+
+        $utcTimezone = new DateTimeZone("UTC");
 
         foreach ($results as &$row) {
 

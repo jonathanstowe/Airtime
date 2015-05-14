@@ -1069,14 +1069,16 @@ SQL;
         $LIQUIDSOAP_ERRORS = array('TagLib: MPEG::Properties::read() -- Could not find a valid last MPEG frame in the stream.');
 
         // Ask Liquidsoap if file is playable
-        $ls_command = sprintf('/usr/local/bin/airtime-liquidsoap -v -c "output.dummy(audio_to_stereo(single(%s)))" 2>&1',
+        /* CC-5990/5991 - Changed to point directly to liquidsoap, removed PATH export */
+        $command = sprintf('liquidsoap -v -c "output.dummy(audio_to_stereo(single(%s)))" 2>&1',
             escapeshellarg($audio_file));
 
-        $command = "export PATH=/usr/local/bin:/usr/bin:/bin/usr/bin/ && $ls_command";
         exec($command, $output, $rv);
 
         $isError = count($output) > 0 && in_array($output[0], $LIQUIDSOAP_ERRORS);
 
+        Logging::info("Is error?! : " . $isError);
+        Logging::info("ls playability response: " . $rv);
         return ($rv == 0 && !$isError);
     }
 
@@ -1491,27 +1493,36 @@ SQL;
         return $updateIsScheduled;
     }
 
+    /**
+     * 
+     * Updates the is_scheduled flag to false for tracks that are no longer
+     * scheduled in the future. We do this by checking the difference between
+     * all files scheduled in the future and all files with is_scheduled = true.
+     * The difference of the two result sets is what we need to update.
+     */
     public static function updatePastFilesIsScheduled()
     {
-        /* Set the is_scheduled flag to false where it was true in the
-         * past, and where tracks are not scheduled in the future and do
-         * not belong to a show that has not ended yet. We need to check
-         * for show end times in case a track is overbooked, which would
-         * indicate it is still scheduled in the future
-         */
-        $sql = <<<SQL
-UPDATE cc_files SET is_scheduled = false
-WHERE is_scheduled = true
-AND id NOT IN (
-  SELECT s.file_id FROM cc_schedule AS s
-  LEFT JOIN cc_show_instances AS i
-  ON s.instance_id = i.id
-  WHERE s.ends > now() at time zone 'UTC'
-  AND i.ends > now() at time zone 'UTC'
-)
-SQL;
-        Application_Common_Database::prepareAndExecute($sql, array(),
-            Application_Common_Database::EXECUTE);
+        $futureScheduledFilesSelectCriteria = new Criteria();
+        $futureScheduledFilesSelectCriteria->addSelectColumn(CcSchedulePeer::FILE_ID);
+        $futureScheduledFilesSelectCriteria->setDistinct();
+        $futureScheduledFilesSelectCriteria->add(CcSchedulePeer::ENDS, gmdate("Y-m-d H:i:s"), Criteria::GREATER_THAN);
+        $stmt = CcSchedulePeer::doSelectStmt($futureScheduledFilesSelectCriteria);
+        $filesScheduledInFuture = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
+        
+        $filesCurrentlySetWithIsScheduledSelectCriteria = new Criteria();
+        $filesCurrentlySetWithIsScheduledSelectCriteria->addSelectColumn(CcFilesPeer::ID);
+        $filesCurrentlySetWithIsScheduledSelectCriteria->add(CcFilesPeer::IS_SCHEDULED, true);
+        $stmt = CcFilesPeer::doSelectStmt($filesCurrentlySetWithIsScheduledSelectCriteria);
+        $filesCurrentlySetWithIsScheduled = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
+        
+        $diff = array_diff($filesCurrentlySetWithIsScheduled, $filesScheduledInFuture);
+        
+        $con = Propel::getConnection(CcFilesPeer::DATABASE_NAME);
+        $selectCriteria = new Criteria();
+        $selectCriteria->add(CcFilesPeer::ID, $diff, Criteria::IN);
+        $updateCriteria = new Criteria();
+        $updateCriteria->add(CcFilesPeer::IS_SCHEDULED, false);
+        BasePeer::doUpdate($selectCriteria, $updateCriteria, $con);
     }
 }
 
