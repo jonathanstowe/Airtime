@@ -110,6 +110,53 @@ function checkCalendarSCUploadStatus(){
     setTimeout(checkCalendarSCUploadStatus, 5000);
 }
 
+function uploadToSoundCloud(show_instance_id, el){
+    
+    var url = baseUrl+"Schedule/upload-to-sound-cloud",
+        $el = $(el),
+        $span = $el.find(".soundcloud");
+    
+    $.post(url, {id: show_instance_id, format: "json"});
+    
+    //first upload to soundcloud.
+    if ($span.length === 0){
+        $span = $("<span/>", {"class": "progress"});
+        
+        $el.find(".fc-event-title").after($span);
+    }
+    else {
+        $span.removeClass("soundcloud").addClass("progress");
+    }
+}
+
+function checkCalendarMCUploadStatus(){
+    var url = baseUrl+'Library/get-upload-to-mixcloud-status',
+        span,
+        id;
+    
+    function checkMCUploadStatusCallback(json) {
+        
+        if (json.mc_id > 0) {
+            span.removeClass("progress").addClass("mixcloud");
+            
+        }
+        else if (json.mc_id == "-3") {
+            span.removeClass("progress").addClass("mc-error");
+        }
+    }
+    
+    function checkMCUploadStatusRequest() {
+        
+        span = $(this);
+        id = span.parents("div.fc-event").data("event").id;
+       
+        $.post(url, {format: "json", id: id, type:"show"}, checkMCUploadStatusCallback);
+    }
+    
+    $("#schedule_calendar span.progress").each(checkMCUploadStatusRequest);
+    setTimeout(checkCalendarMCUploadStatus, 5000);
+}
+
 function findViewportDimensions() {
     var viewportwidth,
         viewportheight;
