@@ -142,7 +142,7 @@ class AirtimeUpgrader252 extends AirtimeUpgrader {
 			Cache::clear();
 			
 			// Begin upgrade
-			$airtimeConf = isset($_SERVER['AIRTIME_CONF']) ? $_SERVER['AIRTIME_CONF'] : "/etc/airtime/airtime.conf";
+			$airtimeConf = isset($_SERVER['AIRTIME_CONF']) ? $_SERVER['AIRTIME_CONF'] : "/usr/local/etc/airtime/airtime.conf";
 			$values = parse_ini_file($airtimeConf, true);
 			
 			$username = $values['database']['dbuser'];
@@ -210,7 +210,7 @@ class AirtimeUpgrader253 extends AirtimeUpgrader
             $con->commit();
         
             //update system_version in cc_pref and change some columns in cc_files
-            $airtimeConf = isset($_SERVER['AIRTIME_CONF']) ? $_SERVER['AIRTIME_CONF'] : "/etc/airtime/airtime.conf";
+            $airtimeConf = isset($_SERVER['AIRTIME_CONF']) ? $_SERVER['AIRTIME_CONF'] : "/usr/local/etc/airtime/airtime.conf";
             $values = parse_ini_file($airtimeConf, true);
         
             $username = $values['database']['dbuser'];

@@ -25,7 +25,7 @@ require_once(dirname(dirname( __DIR__)) . "/application/models/airtime/CcMusicDi
 class MediaSetup extends Setup {
 
     const MEDIA_FOLDER = "mediaFolder";
-    const AIRTIME_CONF_PATH = "/etc/airtime/airtime.conf";
+    const AIRTIME_CONF_PATH = "/usr/local/etc/airtime/airtime.conf";
     
     static $path;
     static $message = null;
@@ -60,7 +60,7 @@ class MediaSetup extends Setup {
         }
         
         // Finalize and move airtime.conf.temp
-        if (file_exists("/etc/airtime/")) {
+        if (file_exists("/usr/local/etc/airtime/")) {
             if (!$this->moveAirtimeConfig()) {
                 $message = "Error moving airtime.conf or deleting /tmp/airtime.conf.temp!";
                 $errors[] = "ERR";
