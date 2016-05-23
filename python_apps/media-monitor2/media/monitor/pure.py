@@ -175,9 +175,9 @@ def walk_supported(directory, clean_empties=False):
 
 def file_locked(path):
     #Capture stderr to avoid polluting py-interpreter.log
-    proc = Popen(["lsof", path], stdout=PIPE, stderr=PIPE)
-    out = proc.communicate()[0].strip('\r\n')
-    return bool(out)
+    #proc = Popen(["lsof", path], stdout=PIPE, stderr=PIPE)
+    #out = proc.communicate()[0].strip('\r\n')
+    return False
 
 def magic_move(old, new, after_dir_make=lambda : None):
     """ Moves path old to new and constructs the necessary to
@@ -286,8 +286,9 @@ def organized_path(old_path, root_path, orig_md):
         show_name   = show_name.replace('/', '')
         date        = normal_md['MDATA_KEY_SHOW_DATE']
         date_parts  = date.split('-')
-        iso_date    = "%s%s%s" % (date_parts[0], date_parts[1], date_parts[2])
-        yyyy, mm, _ = normal_md['MDATA_KEY_YEAR'].split('-',2)
+        yyyy        = date_parts[0]
+        mm          = date_parts[1]
+        iso_date    = "%s%s%s" % (yyyy, mm, date_parts[2])
         fname_base  = '%s-%s.%s' % ( iso_date, show_name, ext )
         filepath = os.path.join(root_path, yyyy, mm, fname_base)
     elif len(normal_md['MDATA_KEY_TRACKNUMBER']) == 0:
